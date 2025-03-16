@@ -1,14 +1,14 @@
-import { parseEnvironment } from "@/utils/environment";
-import { createApp } from "./app";
+import { createApp } from "@/app"
+import { parseEnvironment } from "@/utils/environment"
 
-const env = parseEnvironment(process.env);
+const env = parseEnvironment(process.env)
 if (!env) {
-	process.exit(1);
+	process.exit(1)
 }
 
-const app = createApp(env);
+const app = createApp(env)
 
 export default {
 	PORT: env.PORT,
 	fetch: app.fetch,
-};
+}

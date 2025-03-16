@@ -10,8 +10,8 @@
 		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
 		"dev": "bun run --watch src/index.ts",
 		"dev:setup": "bunx lefthook install",
-		"lint": "bun lint:format && bun lint:types",
-		"lint:format": "bunx @biomejs/biome format --write",
+		"lint": "bun lint:source && bun lint:types",
+		"lint:source": "bunx @biomejs/biome check --write",
 		"lint:types": "bunx tsc"
 	},
 	"devDependencies": {
