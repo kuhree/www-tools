@@ -1,0 +1,55 @@
+.title-details {
+	& .subtitle {
+		font-style: italic;
+		margin: 0;
+		margin-bottom: 0.5rem;
+	}
+
+	& .title {
+		margin-bottom: 0;
+	}
+}
+
+.header-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.8rem;
+
+	& * {
+		margin: 0;
+	}
+}
+
+.nav-list,
+.subnav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+
+	& a {
+		margin: 0;
+		white-space: pre;
+		text-decoration: none;
+
+		&:before {
+			content: "[";
+			padding-right: 0.5em;
+		}
+
+		&:after {
+			content: "]";
+			padding-left: 0.5em;
+		}
+	}
+}
+
+.nav-list {
+	justify-content: flex-end;
+}
+
+.subnav {
+	gap: 0.5rem;
+	justify-content: flex-start;
+	margin: 2rem auto;
+}
