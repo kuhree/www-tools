@@ -9,13 +9,15 @@
 		"build:exec": "bun build --target=bun --compile --minify --sourcemap ./src/index.ts --outfile dist/tools",
 		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
 		"dev": "bun run --watch src/index.ts",
+		"dev:setup": "bunx lefthook install",
 		"lint": "bun lint:format && bun lint:types",
-		"lint:format": "bunx biome format --write",
+		"lint:format": "bunx @biomejs/biome format --write",
 		"lint:types": "bunx tsc"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"lefthook": "^1.11.3"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
