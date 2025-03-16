@@ -9,6 +9,6 @@ if (!env) {
 const app = createApp(env)
 
 export default {
-	PORT: env.PORT,
+	port: env.PORT,
 	fetch: app.fetch,
 }

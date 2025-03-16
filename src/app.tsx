@@ -10,6 +10,8 @@ import { timing } from "hono/timing"
 import { trimTrailingSlash } from "hono/trailing-slash"
 
 import type { Environment } from "@/utils/environment"
+import { zValidator } from "@hono/zod-validator"
+import { z } from "zod"
 
 export function createApp(env: Environment): Hono {
 	const app = new Hono()
@@ -30,6 +32,40 @@ export function createApp(env: Environment): Hono {
 				c.header("Cache-Control", "public, immutable, max-age=31536000")
 			},
 		}),
+	)
+
+	/////// API
+	app.get("/health", (c) => c.text("ok"))
+	app.get("/ping", (c) => c.text("pong"))
+
+	////// Pages
+	app.get(
+		"/",
+		zValidator(
+			"query",
+			z.object({
+				search: z.string().min(1).optional(),
+			}),
+		),
+		async (c) => {
+			const { search } = c.req.valid("query")
+
+			return c.render(
+				<>
+					<div class="subnav">
+						<a href="/settings"> Settings </a>
+					</div>
+
+					<h2>All Tools</h2>
+				</>,
+				{
+					title: "Homepage",
+					subtitle:
+						"A collection of tools. No logging, no ads, just solutions.",
+					header: { enabled: true, back: null, links: null },
+				},
+			)
+		},
 	)
 
 	return app
