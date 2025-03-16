@@ -36,15 +36,11 @@ export function App() {
 		setImageUrl(null)
 	}
 
-	function handleDownload() {
-		document.getElementById("image-download")?.click()
-	}
-
 	return (
 		<>
 			<form
 				method="post"
-				action="/api/v1/image"
+				action="/api/v1/images"
 				enctype="multipart/form-data"
 				onSubmit={handleSubmit}
 			>
@@ -135,18 +131,14 @@ export function App() {
 							alt="Converted result"
 							style={{ maxWidth: "100%", height: "auto" }}
 						/>
-						<a class="hidden" id="image-download" href={imageUrl} download>
-							Download Image
-						</a>
-
 						<div class="actions">
 							<button type="button" onClick={clearImage}>
 								Clear Image
 							</button>
 
-							<button type="button" onClick={handleDownload}>
+							<a class="hidden" id="image-download" href={imageUrl} download>
 								Download Image
-							</button>
+							</a>
 						</div>
 					</div>
 				</>

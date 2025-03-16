@@ -1,5 +1,4 @@
 @import "layout.css";
-@import "list.css";
 
 @layer utils {
 	.no-decoration {

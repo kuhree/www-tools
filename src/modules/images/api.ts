@@ -1,6 +1,6 @@
 import type { AppEnv } from "@/types"
 import { AppError } from "@/utils/error"
-import { sendError } from "@/utils/response"
+import { sendError, sendSuccess } from "@/utils/response"
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import sharp from "sharp"
@@ -8,10 +8,10 @@ import { z } from "zod"
 
 export const imagesApi = new Hono<AppEnv>()
 
-imagesApi.get(
-	"/image",
+imagesApi.post(
+	"/",
 	zValidator(
-		"query",
+		"form",
 		z.object({
 			height: z.coerce
 				.number({ required_error: "Height is required" })
@@ -68,7 +68,7 @@ imagesApi.get(
 		},
 	),
 	async (c) => {
-		const { height, width, quality, format, fit } = c.req.valid("query")
+		const { height, width, quality, format, fit } = c.req.valid("form")
 		const body = await c.req.parseBody()
 		const file = body.file
 		if (!file) {
