@@ -1,0 +1,25 @@
+{
+	"name": "tools",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "bun run --watch src/index.ts",
+		"lint": "bun lint:format && bun lint:types",
+		"lint:format": "bunx biome format --write",
+		"lint:types": "bunx tsc",
+		"build": "bun run build:source && bun run build:assets && bun run build:exec",
+		"build:assets": "cp -r public src/db/migrations dist",
+		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
+		"build:exec": "bun build --target=bun --compile --minify --sourcemap ./src/index.ts --outfile dist/flamepp"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"hono": "^4.7.4"
+	}
+}
