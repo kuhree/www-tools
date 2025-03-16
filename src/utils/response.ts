@@ -14,15 +14,15 @@ export type ApiSuccessResponse<T = unknown> = z.infer<
 > & {
 	data: T
 }
-export const ApiSuccessSchema = z.object({
+const ApiSuccessSchema = z.object({
 	meta: ApiMetaSchema,
 	success: z.literal(true),
 	message: z.string().optional(),
 	data: z.any().optional(),
 })
 
-export type ApiErrorResponse = z.infer<typeof ApiErrorSchema>
-export const ApiErrorSchema = z.object({
+type ApiErrorResponse = z.infer<typeof ApiErrorSchema>
+const ApiErrorSchema = z.object({
 	meta: ApiMetaSchema,
 	success: z.literal(false),
 	error: z.object({
@@ -32,7 +32,7 @@ export const ApiErrorSchema = z.object({
 	}),
 })
 
-export function createSuccessResponse<T>(
+function createSuccessResponse<T>(
 	requestId: string,
 	data: T,
 	message?: string,
@@ -49,7 +49,7 @@ export function createSuccessResponse<T>(
 	}
 }
 
-export function createErrorResponse(
+function createErrorResponse(
 	requestId: string,
 	error: ApiErrorResponse["error"],
 ): ApiErrorResponse {
@@ -77,5 +77,6 @@ export function sendError(c: Context, err: unknown) {
 	const requestId = c.get("requestId")
 	const error = toAppError(err)
 	// TODO: Send to Sentry? Or, other
+	console.error(error)
 	return c.json(createErrorResponse(requestId, error), error.status)
 }

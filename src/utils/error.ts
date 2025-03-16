@@ -25,7 +25,7 @@ export const ErrorCodeToHttpStatusMap: Record<ErrorCode, ContentfulStatusCode> =
 export class AppError extends Error {
 	constructor(
 		public code: ErrorCode,
-		message: string,
+		public message: string,
 		public details?: unknown,
 		public status?: ContentfulStatusCode,
 	) {

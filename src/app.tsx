@@ -11,12 +11,14 @@ import { trimTrailingSlash } from "hono/trailing-slash"
 
 import { withErrorHandler } from "@/middlewares/error"
 import { withLayout } from "@/middlewares/renderer"
-import { sharpApi } from "@/modules/sharp/api"
 import type { AppEnv } from "@/types"
 import { ErrorDetails } from "@/ui/error-details"
 import type { Environment } from "@/utils/environment"
 import { AppError, ErrorCodes } from "@/utils/error"
 import { sendError } from "@/utils/response"
+
+import { imagesApi } from "@/modules/images/api"
+import { usernamesApi } from "@/modules/usernames/api"
 
 export function makeApp(environment: Environment): Hono<AppEnv> {
 	const app = new Hono<AppEnv>()
@@ -46,7 +48,8 @@ export function makeApp(environment: Environment): Hono<AppEnv> {
 	/////// API
 	app.use("/api/*", withErrorHandler)
 	app.use("/api/*", cors({ origin: environment.ALLOWED_ORIGINS }))
-	app.route("/api/v1/sharp", sharpApi)
+	app.route("/api/v1/images", imagesApi)
+	app.route("/api/v1/usernames", usernamesApi)
 
 	/////// Pages
 	app.get("/", async (c) => {
