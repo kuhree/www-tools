@@ -38,8 +38,6 @@ export function Header({
 	back = { href: "javascript:history.back()", name: "Back" },
 	links = {
 		home: "/",
-		apps: "/apps",
-		links: "/links",
 	},
 }: HeaderProps) {
 	return (

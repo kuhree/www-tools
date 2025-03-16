@@ -4,6 +4,8 @@ export type Environment = z.infer<typeof EnvironmentSchema>
 export const EnvironmentSchema = z.object({
 	NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
 	PORT: z.coerce.number().min(0).default(8080),
+
+	ALLOWED_ORIGINS: z.string().default("*"),
 })
 
 export function parseEnvironment(env: unknown): null | Environment {

@@ -21,7 +21,7 @@ declare module "hono" {
 export const withLayout = jsxRenderer(
 	({ title, subtitle, header = { enabled: true }, children }) => (
 		<Root title={title}>
-			<ErrorBoundary fallbackRender={(error) => <ErrorDetails error={error} />}>
+			<ErrorBoundary fallbackRender={(error) => <ErrorDetails err={error} />}>
 				{header?.enabled ? (
 					<Header back={header.back} links={header.links} />
 				) : null}
