@@ -52,19 +52,22 @@ export function makeApp(environment: Environment): Hono<AppEnv> {
 	app.route("/api/v1/usernames", usernamesApi)
 
 	/////// Pages
-	app.get("/tools/:tool/entry.js", async (c) => {
-		const { tool } = c.req.param()
-		const file = await Bun.build({
-			entrypoints: [`src/modules/${tool}/entry.tsx`],
-		})
+	// Register dynamic build route ONLY in development
+	if (environment.NODE_ENV === "development") {
+		app.get("/tools/:tool/entry.js", async (c) => {
+			const { tool } = c.req.param()
+			const file = await Bun.build({
+				entrypoints: [`src/modules/${tool}/entry.tsx`],
+			})
 
-		const outputPromises = file.outputs.map((o) => o.text())
-		const outputTexts = await Promise.all(outputPromises)
-		return c.body(outputTexts.join("\r\n"), 200, {
-			"Content-Type": "application/javascript",
-			"Cache-Control": "public, immutable, max-age=31536000",
+			const outputPromises = file.outputs.map((o) => o.text())
+			const outputTexts = await Promise.all(outputPromises)
+			return c.body(outputTexts.join("\r\n"), 200, {
+				"Content-Type": "application/javascript",
+				"Cache-Control": "public, immutable, max-age=31536000",
+			})
 		})
-	})
+	}
 
 	app.get("/tools/:tool", (c) => {
 		const { tool } = c.req.param()

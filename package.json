@@ -4,8 +4,9 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"build": "bun run build:source && bun run build:assets",
-		"build:assets": "cp -r public dist && bun build src/modules/usernames/entry.tsx --outdir dist/public/tools/usernames && bun build src/modules/images/entry.tsx --outdir dist/public/tools/images",
+		"build": "bun run build:tools && bun run build:source && bun run build:assets",
+		"build:tools": "bun build src/modules/usernames/entry.tsx --outdir public/tools/usernames && bun build src/modules/images/entry.tsx --outdir public/tools/images",
+		"build:assets": "cp -r public dist",
 		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
 		"dev": "bun run --watch src/index.ts",
 		"dev:setup": "bunx lefthook install",
