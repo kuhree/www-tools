@@ -1,14 +1,12 @@
 import type { AppEnv } from "@/types"
 import { AppError } from "@/utils/error"
-import { sendError, sendSuccess } from "@/utils/response"
+import { sendError } from "@/utils/response"
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import sharp from "sharp"
 import { z } from "zod"
 
-export const imagesApi = new Hono<AppEnv>()
-
-imagesApi.post(
+export const imagesApi = new Hono<AppEnv>().post(
 	"/",
 	zValidator(
 		"form",

@@ -1,0 +1,10 @@
+# [test]
+# preload = ["./setup.ts"]
+# coverageReporter  = ["text", "lcov"]
+# coverageDir = "dist/coverage"
+
+[auto]
+auto = "auto"
+
+[run]
+bun = true

@@ -20,39 +20,87 @@ import { sendError } from "@/utils/response"
 import { imagesApi } from "@/modules/images/api"
 import { usernamesApi } from "@/modules/usernames/api"
 
-export function makeApp(environment: Environment): Hono<AppEnv> {
+export type AppType = ReturnType<typeof makeApp>
+export function makeApp(environment: Environment) {
 	const app = new Hono<AppEnv>()
+		/////// Middleware
+		.use(requestId())
+		.use(logger())
+		.use(timing())
+		.use(prettyJSON())
+		.use(poweredBy())
+		.use(trimTrailingSlash())
+		.use(secureHeaders())
+		.use(withLayout)
 
-	app.use(requestId())
-	app.use(logger())
-	app.use(timing())
-	app.use(prettyJSON())
-	app.use(poweredBy())
-	app.use(trimTrailingSlash())
-	app.use(secureHeaders())
-	app.use(withLayout)
-	app.use(
-		serveStatic({
-			root: "public",
-			precompressed: true,
-			onFound: (_path, c) => {
-				c.header("Cache-Control", "public, immutable, max-age=31536000")
-			},
-		}),
-	)
+		/////// Static Assets
+		.use(
+			serveStatic({
+				root: "public",
+				precompressed: true,
+				onFound: (_path, c) => {
+					c.header("Cache-Control", "public, immutable, max-age=31536000")
+				},
+			}),
+		)
 
-	/////// Status
-	app.get("/health", (c) => c.text("ok"))
-	app.get("/ping", (c) => c.text("pong"))
+		/////// Status
+		.get("/health", (c) => c.text("ok"))
+		.get("/ping", (c) => c.text("pong"))
 
-	/////// API
-	app.use("/api/*", withErrorHandler)
-	app.use("/api/*", cors({ origin: environment.ALLOWED_ORIGINS }))
-	app.route("/api/v1/images", imagesApi)
-	app.route("/api/v1/usernames", usernamesApi)
+		/////// API
+		.use("/api/*", withErrorHandler)
+		.use("/api/*", cors({ origin: environment.ALLOWED_ORIGINS }))
+		.route("/api/v1/images", imagesApi)
+		.route("/api/v1/usernames", usernamesApi)
 
-	/////// Pages
-	// Register dynamic build route ONLY in development
+		/////// Pages
+		.get("/tools/:tool", (c) => {
+			const { tool } = c.req.param()
+			return c.render(
+				<>
+					<div id="root" />
+					<link
+						type="text/css"
+						rel="stylesheet"
+						href={`/static/styles/tools/${tool}.css`}
+					/>
+					<script type="text/javascript" src={`/tools/${tool}/entry.js`} />
+				</>,
+				{ title: tool.toLocaleUpperCase() },
+			)
+		})
+		.get("/", async (c) => {
+			return c.render(
+				<>
+					<h2>All Tools</h2>
+					<div class="subnav">
+						<a href="/tools/usernames">Username Search</a>
+						<a href="/tools/images">Image Optimizer</a>
+					</div>
+				</>,
+				{
+					title: "Kuhree's Web Toolbox",
+					subtitle:
+						"A collection of tools. No logging, no ads, just solutions.",
+					header: { enabled: true, back: null, links: null },
+				},
+			)
+		})
+
+		/////// Error Handling
+		.onError((err, c) => sendError(c, err))
+		.notFound((c) => {
+			const error = new AppError(
+				ErrorCodes.NOTFOUND_ERROR,
+				"Ooops! That page doesn't seem to exist.",
+			)
+
+			c.status(404)
+			return c.render(<ErrorDetails err={error} />, { title: "Not Found" })
+		})
+
+	/////// Dynamic build route for development ONLY
 	if (environment.NODE_ENV === "development") {
 		app.get("/tools/:tool/entry.js", async (c) => {
 			const { tool } = c.req.param()
@@ -68,51 +116,6 @@ export function makeApp(environment: Environment): Hono<AppEnv> {
 			})
 		})
 	}
-
-	app.get("/tools/:tool", (c) => {
-		const { tool } = c.req.param()
-		return c.render(
-			<>
-				<div id="root" />
-				<link
-					type="text/css"
-					rel="stylesheet"
-					href={`/static/styles/tools/${tool}.css`}
-				/>
-				<script type="text/javascript" src={`/tools/${tool}/entry.js`} />
-			</>,
-			{ title: tool.toLocaleUpperCase() },
-		)
-	})
-
-	app.get("/", async (c) => {
-		return c.render(
-			<>
-				<h2>All Tools</h2>
-				<div class="subnav">
-					<a href="/tools/usernames">Username Search</a>
-					<a href="/tools/images">Image Optimizer</a>
-				</div>
-			</>,
-			{
-				title: "Kuhree's Web Toolbox",
-				subtitle: "A collection of tools. No logging, no ads, just solutions.",
-				header: { enabled: true, back: null, links: null },
-			},
-		)
-	})
-
-	app.notFound((c) => {
-		const error = new AppError(
-			ErrorCodes.NOTFOUND_ERROR,
-			"Ooops! That page doesn't seem to exist.",
-		)
-
-		c.status(404)
-		return c.render(<ErrorDetails err={error} />, { title: "Not Found" })
-	})
-
-	app.onError((err, c) => sendError(c, err))
 
 	return app
 }

@@ -13,9 +13,7 @@ export type PlatformResult = {
 	url: string | null
 }
 
-export const usernamesApi = new Hono<AppEnv>()
-
-usernamesApi.get(
+export const usernamesApi = new Hono<AppEnv>().get(
 	"/:username",
 	zValidator(
 		"param",
