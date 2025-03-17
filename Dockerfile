@@ -33,4 +33,4 @@ COPY --from=prerelease /usr/src/app/dist .
 USER bun
 ENV NODE_ENV=production PORT=8080
 EXPOSE ${PORT}/tcp
-ENTRYPOINT [ "bun", "--bun", "run", "index.js" ]
+ENTRYPOINT [ "bun", "index.js" ]

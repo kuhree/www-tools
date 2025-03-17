@@ -20,7 +20,7 @@ export function parseEnvironment(env: unknown): null | Environment {
 
 	for (const error of result.error.errors) {
 		console.error(
-			`[Environment]:: Invalid environment variable ${error.path.join(".")}.`,
+			`[Environment] :: Invalid environment variable ${error.path.join(".")}.`,
 			error.message,
 		)
 	}
