@@ -42,9 +42,24 @@ function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 		[onDevices],
 	)
 
-	if (!devices) {
-		navigator.mediaDevices.enumerateDevices().then(setDevices).catch(onError)
-	}
+	useEffect(() => {
+		async function getDevices() {
+			if (!devices) {
+				try {
+					const devices = await navigator.mediaDevices.enumerateDevices()
+					setDevices(devices)
+				} catch (error) {
+					onError(
+						error instanceof Error
+							? error
+							: new Error("Could not get devices", { cause: error }),
+					)
+				}
+			}
+		}
+
+		getDevices()
+	}, [])
 
 	return (
 		<form onSubmit={handleFormSubmit}>

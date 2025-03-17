@@ -55,15 +55,20 @@ export function makeApp(environment: Environment) {
 		.route("/api/v1/usernames", usernamesApi)
 
 		/////// Pages
+		.get("/t/:tool", (c) => {
+			const { tool } = c.req.param()
+			return c.redirect(`/tools/${tool}`)
+		})
 		.get("/tools/:tool", (c) => {
 			const { tool } = c.req.param()
-			const styleHref = `/static/styles/tools/${tool}.css`
-			const scriptSrc = `/tools/${tool}/entry.js`
+			const entryCss = `/static/styles/tools/${tool}.css`
+			const entryJs = `/tools/${tool}/entry.js`
+
 			return c.render(
 				<>
 					<div id="root" />
-					<link type="text/css" rel="stylesheet" href={styleHref} />
-					<script type="text/javascript" src={scriptSrc} />
+					<link type="text/css" rel="stylesheet" href={entryCss} />
+					<script type="text/javascript" src={entryJs} />
 				</>,
 				{ title: tool.toLocaleUpperCase() },
 			)

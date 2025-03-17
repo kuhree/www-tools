@@ -14,4 +14,4 @@ withShutdown(
 	}),
 )
 
-console.log("[SERVER] :: Started", { port: env.PORT })
+console.log("[SERVER] :: Started", env)

@@ -4,15 +4,13 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"build": "bun run build:source && bun run build:assets",
-		"build:assets": "cp -r public dist && bun build src/modules/usernames/entry.tsx --outdir dist/public/tools/usernames && bun build src/modules/images/entry.tsx --outdir dist/public/tools/images && bun build src/modules/webcams/entry.tsx --outdir dist/public/tools/webcams  ",
-		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
+		"build": "bun run bin/build.ts",
 		"dev": "bun run --watch src/index.ts",
-		"start": "bun run dist/index.js",
 		"dev:setup": "bunx lefthook install",
 		"lint": "bun lint:source && bun lint:types",
 		"lint:source": "bunx @biomejs/biome check --write",
-		"lint:types": "bunx tsc"
+		"lint:types": "bunx tsc",
+		"start": "bun run --cwd dist index.js"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
