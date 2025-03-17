@@ -31,7 +31,7 @@ export function makeApp(environment: Environment) {
 		.use(poweredBy())
 		.use(trimTrailingSlash())
 		.use(secureHeaders())
-		.use(withLayout)
+		.use(withLayout(environment))
 
 		/////// Static Assets
 		.use(

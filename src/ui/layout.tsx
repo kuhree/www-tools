@@ -2,9 +2,13 @@ import type { PropsWithChildren } from "hono/jsx"
 
 export type RootProps = PropsWithChildren<{
 	title: string
+	umami?: {
+		src: string
+		id: string
+	}
 }>
 
-export function Root({ title, children }: RootProps) {
+export function Root({ title, umami, children }: RootProps) {
 	return (
 		<>
 			<html lang="en">
@@ -15,6 +19,9 @@ export function Root({ title, children }: RootProps) {
 					<link rel="stylesheet" href="/static/monospace-web/index.css" />
 					<link rel="stylesheet" href="/static/styles/index.css" />
 					<title>{title} | Kuhree's Web Tools</title>
+					{umami ? (
+						<script defer src={umami.src} data-website-id={umami.id} />
+					) : null}
 				</head>
 
 				<body>

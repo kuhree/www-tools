@@ -9,6 +9,9 @@ export const EnvironmentSchema = z.object({
 
 	AUTHOR_EMAIL: z.string().email().default("hi@tools.kuhree.com"),
 	REPO_URL: z.string().url().default("https://github.com/kuhree/tools"),
+
+	UMAMI_SRC: z.string().url().default("https://www-umami.fly.dev/script.js"),
+	UMAMI_ID: z.string().default("fd2f9af9-c37c-413f-943b-77ce12f4500e"),
 })
 
 export function parseEnvironment(env: unknown): null | Environment {
