@@ -100,6 +100,7 @@ export function App() {
 		<>
 			<form onSubmit={handleSubmit}>
 				<input
+					required
 					id="username"
 					class="width-auto"
 					type="text"
@@ -116,7 +117,7 @@ export function App() {
 						tabindex={2}
 						disabled={isLoading || !username.trim()}
 					>
-						{isLoading ? "[ Checking... ]" : "[ Check Availability ]"}
+						{isLoading ? "Checking..." : "Check Availability"}
 					</button>
 				</div>
 

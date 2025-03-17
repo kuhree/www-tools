@@ -90,7 +90,7 @@ function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 			</fieldset>
 
 			<div class="form-actions">
-				<button type="submit">Submit</button>
+				<button type="submit">Open Camera</button>
 			</div>
 		</form>
 	)

@@ -1,4 +1,5 @@
 import { useState } from "hono/jsx/dom"
+
 export function App() {
 	const [imageUrl, setImageUrl] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -45,7 +46,7 @@ export function App() {
 			>
 				<label for="file">
 					Upload file
-					<input accept="image/*" name="file" id="file" type="file" />
+					<input required accept="image/*" name="file" id="file" type="file" />
 				</label>
 
 				<fieldset>
@@ -55,6 +56,7 @@ export function App() {
 						<label for="quality">
 							Quality
 							<input
+								required
 								name="quality"
 								id="quality"
 								type="number"
@@ -67,6 +69,7 @@ export function App() {
 						<label for="height">
 							Height
 							<input
+								required
 								name="height"
 								id="height"
 								type="number"
@@ -79,6 +82,7 @@ export function App() {
 						<label for="width">
 							Width
 							<input
+								required
 								name="width"
 								id="width"
 								type="number"
@@ -98,6 +102,7 @@ export function App() {
 							(opt, idx) => (
 								<label key={opt} for={`fit_${opt}`}>
 									<input
+										required
 										type="radio"
 										name="fit"
 										id={`fit_${opt}`}
@@ -113,8 +118,8 @@ export function App() {
 				</fieldset>
 
 				<div class="actions">
-					<button type="reset">Reset</button>
-					<button type="submit">Submit</button>
+					<button type="reset">Reset Form</button>
+					<button type="submit">Optimize Image</button>
 				</div>
 			</form>
 

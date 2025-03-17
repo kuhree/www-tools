@@ -79,6 +79,31 @@ export function makeApp(environment: Environment) {
 						<a href="/tools/images">Image Optimizer</a>
 						<a href="/tools/webcams">Webcam Tester</a>
 					</div>
+
+					<h2>More coming soon...</h2>
+					<ul>
+						<li>
+							<a
+								href={encodeURI(
+									`${environment.REPO_URL}/issues/new?title=[Feature Request]`,
+								)}
+							>
+								Submit a request
+							</a>
+						</li>
+						<li>
+							<a
+								href={encodeURI(
+									`${environment.REPO_URL}/issues/new?title=[Issue]`,
+								)}
+							>
+								File an issue
+							</a>
+						</li>
+						<li>
+							<a href={`mailto:${environment.AUTHOR_EMAIL}`}>Get in touch</a>
+						</li>
+					</ul>
 				</>,
 				{
 					title: "Kuhree's Web Toolbox",

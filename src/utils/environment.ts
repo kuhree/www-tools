@@ -6,6 +6,9 @@ export const EnvironmentSchema = z.object({
 	PORT: z.coerce.number().min(0).default(8080),
 
 	ALLOWED_ORIGINS: z.string().default("*"),
+
+	AUTHOR_EMAIL: z.string().email().default("hi@tools.kuhree.com"),
+	REPO_URL: z.string().url().default("https://github.com/kuhree/tools"),
 })
 
 export function parseEnvironment(env: unknown): null | Environment {
