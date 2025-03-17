@@ -1,14 +1,14 @@
 import { makeApp } from "@/app"
 import { parseEnvironment } from "@/utils/environment"
 
-const environment = parseEnvironment(process.env)
-if (!environment) {
+const env = parseEnvironment(process.env)
+if (!env) {
 	process.exit(1)
 }
 
-const app = makeApp(environment)
+const app = makeApp(env)
 
 export default {
-	port: environment.PORT,
+	port: env.PORT,
 	fetch: app.fetch,
 }

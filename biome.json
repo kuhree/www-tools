@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["public/static/monospace-web/**"]
+		"ignore": ["dist/**", "public/static/monospace-web/**"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -21,7 +21,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": {
+				"useMediaCaption": "off"
+			}
 		}
 	},
 	"javascript": {

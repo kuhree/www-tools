@@ -1,5 +1,4 @@
 import { useState } from "hono/jsx/dom"
-
 export function App() {
 	const [imageUrl, setImageUrl] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)

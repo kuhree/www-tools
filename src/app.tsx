@@ -77,13 +77,14 @@ export function makeApp(environment: Environment) {
 					<div class="subnav">
 						<a href="/tools/usernames">Username Search</a>
 						<a href="/tools/images">Image Optimizer</a>
+						<a href="/tools/webcams">Webcam Tester</a>
 					</div>
 				</>,
 				{
 					title: "Kuhree's Web Toolbox",
 					subtitle:
 						"A collection of tools. No logging, no ads, just solutions.",
-					header: { enabled: true, back: null, links: null },
+					header: { enabled: false, back: null, links: null },
 				},
 			)
 		})
@@ -101,21 +102,19 @@ export function makeApp(environment: Environment) {
 		})
 
 	/////// Dynamic build route for development ONLY
-	if (environment.NODE_ENV === "development") {
-		app.get("/tools/:tool/entry.js", async (c) => {
-			const { tool } = c.req.param()
-			const file = await Bun.build({
-				entrypoints: [`src/modules/${tool}/entry.tsx`],
-			})
-
-			const outputPromises = file.outputs.map((o) => o.text())
-			const outputTexts = await Promise.all(outputPromises)
-			return c.body(outputTexts.join("\r\n"), 200, {
-				"Content-Type": "application/javascript",
-				"Cache-Control": "public, immutable, max-age=31536000",
-			})
+	app.get("/tools/:tool/entry.js", withErrorHandler, async (c) => {
+		const { tool } = c.req.param()
+		const file = await Bun.build({
+			entrypoints: [`src/modules/${tool}/entry.tsx`],
 		})
-	}
+
+		const outputPromises = file.outputs.map((o) => o.text())
+		const outputTexts = await Promise.all(outputPromises)
+		return c.body(outputTexts.join("\r\n"), 200, {
+			"Content-Type": "application/javascript",
+			"Cache-Control": "public, immutable, max-age=31536000",
+		})
+	})
 
 	return app
 }
