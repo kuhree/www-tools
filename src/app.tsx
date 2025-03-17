@@ -57,15 +57,13 @@ export function makeApp(environment: Environment) {
 		/////// Pages
 		.get("/tools/:tool", (c) => {
 			const { tool } = c.req.param()
+			const styleHref = `/static/styles/tools/${tool}.css`
+			const scriptSrc = `/tools/${tool}/entry.js`
 			return c.render(
 				<>
 					<div id="root" />
-					<link
-						type="text/css"
-						rel="stylesheet"
-						href={`/static/styles/tools/${tool}.css`}
-					/>
-					<script type="text/javascript" src={`/tools/${tool}/entry.js`} />
+					<link type="text/css" rel="stylesheet" href={styleHref} />
+					<script type="text/javascript" src={scriptSrc} />
 				</>,
 				{ title: tool.toLocaleUpperCase() },
 			)

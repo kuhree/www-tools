@@ -6,6 +6,11 @@ if (!env) {
 	process.exit(1)
 }
 
+process.on("SIGINT", () => {
+	console.warn("Received SIGINT, shutting down...")
+	process.exit(0)
+})
+
 const app = makeApp(env)
 
 export default {

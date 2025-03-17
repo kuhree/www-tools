@@ -19,12 +19,13 @@
 
       # Bun dev environment
       bunShell = pkgs.mkShell {
-        name = "dropbear-shell";
+        name = "tools-shell";
         packages = [
           pkgs.bun # Latest Bun runtime
           pkgs.nodejs # Additional tooling
           pkgs.git # Git for version control
           pkgs.aider-chat # AI coding assistant
+					pkgs.gcc # sharp dependency
         ];
 
         shellHook = ''
