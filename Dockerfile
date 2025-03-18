@@ -3,6 +3,10 @@
 FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
+# Install sherlock
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install sherlock-project
+
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM base AS install
