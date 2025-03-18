@@ -10,7 +10,7 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    concurrency: docker-group    # optional: ensure only one action runs at a time
+    concurrency: docker-group
     outputs:
       image_tags: ${{ steps.meta.outputs.tags || steps.meta-pr.outputs.tags }}
     steps:
@@ -98,7 +98,7 @@ jobs:
       github.event_name == 'push' &&
       github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
+    concurrency: deploy-group
     steps:
       - uses: actions/checkout@v4
         with:
