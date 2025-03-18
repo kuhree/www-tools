@@ -1,0 +1,6 @@
+{
+	"name": "Create GitHub Release",
+	"description": "Create release on Github",
+	"iconName": "octicon rocket",
+	"categories": ["deployment"]
+}

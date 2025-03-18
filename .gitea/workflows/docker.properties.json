@@ -1,0 +1,6 @@
+{
+	"name": "Publish Docker Container",
+	"description": "Build, test and push Docker image to Gitea Packages.",
+	"iconName": "octicon container",
+	"categories": ["continuous-integration", "dockerfile"]
+}

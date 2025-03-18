@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: group:release:${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          platform: "gitea"
+          baseUrl: "http://gitea:3000"
+          configuration: ".changelog.json"
+          mode: "commit"
+          token: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+          failOnError: true
+
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - name: Create Release
+        uses: https://gitea.com/actions/release-action@main
+        with:
+          files: |-
+            dist/**  # Optional: Add assets to the release
+          body: ${{ steps.changelog.outputs.changelog }}
+          api_key: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+
+      - name: Notify Release Status
+        if: always()
+        run: |
+          STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          STATUS_TEXT="${{ job.status == 'success' && 'white_checkmark' || 'x' }}"
+
+          curl \
+            -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
+            -H "Title: Gitea Release: $STATUS_EMOJI" \
+            -H "Tags: rocket,cd,${STATUS_TEXT}" \
+            -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
+            -H "Click: ${{ github.server_url }}/${{ github.repository }}/releases/${{ github.ref }}" \
+            -H "Markdown: yes" \
+            -d "### Deployment Details
+            - **Application**: \`${{ github.event.repository.name }}\`
+            - **Environment**: \`production\`
+            - **Branch**: \`${{ github.ref_name }}\`
+            - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            - **Run**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ${STATUS_EMOJI} Release **${{ job.status }}**" \
+            ${{ secrets.NTFY_URL }}

@@ -1,0 +1,6 @@
+{
+	"name": "Run Linting/Formatting/Tests",
+	"description": "Run @biomejs linting/formatting and all tests",
+	"iconName": "octicon beaker",
+	"categories": ["continuous-integration", "code-quality", "testing"]
+}

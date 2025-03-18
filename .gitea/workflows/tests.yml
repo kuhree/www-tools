@@ -1,0 +1,50 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    concurrency: group:tests:${{ github.ref }}
+    strategy:
+      matrix:
+        bun-version: [1.2.x]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+      - run: bun install --frozen-lockfile
+      - run: bunx @biomejs/biome ci
+      - run: bunx tsc --noEmit
+      - run: bun test
+
+      - name: Notify Status
+        if: always()
+        run: |
+          STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          STATUS_TEXT="${{ job.status == 'success' && 'white_checkmark' || 'x' }}"
+
+          curl \
+            -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
+            -H "Title: Tests: $STATUS_EMOJI" \
+            -H "Tags: rocket,cd,${STATUS_TEXT}" \
+            -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
+            -H "Click: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
+            -H "Markdown: yes" \
+            -d "### Deployment Details
+            - **Application**: \`${{ github.event.repository.name }}\`
+            - **Environment**: \`production\`
+            - **Branch**: \`${{ github.ref_name }}\`
+            - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            - **Run**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ${STATUS_EMOJI} Tests **${{ job.status }}**
+
+            [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" \
+            ${{ secrets.NTFY_URL }}

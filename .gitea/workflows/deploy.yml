@@ -1,0 +1,48 @@
+name: Deploy
+
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: group:deploy:${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        run: flyctl deploy --local-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Notify Deploy Status
+        if: always()
+        run: |
+          STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          STATUS_TEXT="${{ job.status == 'success' && 'white_checkmark' || 'x' }}"
+
+          curl \
+            -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
+            -H "Title: Fly.io Deployment: $STATUS_EMOJI" \
+            -H "Tags: rocket,cd,${STATUS_TEXT}" \
+            -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
+            -H "Click: https://fly.io/apps/${{ github.event.repository.name }}" \
+            -H "Markdown: yes" \
+            -d "### Deployment Details
+            - **Application**: \`${{ github.event.repository.name }}\`
+            - **Environment**: \`production\`
+            - **Branch**: \`${{ github.ref_name }}\`
+            - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            - **Run**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ${STATUS_EMOJI} Deployment **${{ job.status }}**
+
+            [View App](https://fly.io/apps/${{ github.event.repository.name }})
+            [View Logs](https://fly.io/apps/${{ github.event.repository.name }}/monitoring)" \
+            ${{ secrets.NTFY_URL }}
