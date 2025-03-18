@@ -102,6 +102,77 @@ src/
 
 ### Deployment
 
+#### Docker Image
+
+1. **Build Process**:
+   - **Multi-stage build** (defined in `Dockerfile`):
+     - **Base**: Uses official Bun image (`oven/bun:1`)
+     - **Dependencies**: Installs dev and prod dependencies in separate stages
+     - **Production**: Copies only required modules and optimized bundles
+     - **Final image**: Single static binary with no external dependencies
+
+   ```dockerfile
+   # Final stage
+   FROM base AS release
+   COPY --from=install /temp/prod/node_modules node_modules
+   COPY --from=prerelease /usr/src/app/package.json .
+   COPY --from=prerelease /usr/src/app/dist .
+   USER bun
+   EXPOSE 8080/tcp
+   ENTRYPOINT [ "bun", "index.js" ]
+   ```
+
+2. **Image Tags**:
+   - `latest`: Latest production build
+   - Semver tags (e.g., `v1.0.0`) from package.json
+   - `sha-<short-commit>` for immutable references
+
+3. **Registry**:
+   - Pushes to [git.littlevibe.net](https://git.littlevibe.net) container registry
+   - Uses `LITTLEVIBE_ACCESS_TOKEN` for authentication
+
+#### Fly.io Configuration (fly.toml)
+
+```toml
+app = 'www-tools'
+primary_region = 'atl'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+```
+
+Key features:
+  - Deployed to `atl` (Atlanta) primary region
+  - Auto-scaling with minimal resource allocation (1GB RAM, shared CPU)
+  - Enforces HTTPS via Fly's global edge network
+  - Zero-downtime deployments with Fly's routing
+
+#### CI/CD Workflow
+
+1. **Triggers**:
+   - Pushes to `main`
+   - Pull requests to `main`
+   - Manual runs via Gitea UI
+
+2. **Steps**:
+   - **Docker Build**: Produces tagged images using `docker/build-push-action`
+   - **Fly Deployment**: Uses `flyctl deploy` with `FLY_API_TOKEN`
+   - **Notifications**: Sends status updates via ntfy.sh
+
+3. **Secrets**:
+   - `LITTLEVIBE_ACCESS_TOKEN` (Docker registry)
+   - `FLY_API_TOKEN` (Fly deployment)
+   - `NTFY_API_TOKEN` (Notification service)
+
 ## Contributing
 
 1. Fork this repository.
