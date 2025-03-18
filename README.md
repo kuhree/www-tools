@@ -164,6 +164,9 @@ Key features:
    - Manual runs via Gitea UI
 
 2. **Steps**:
+   - **Test Phase**: Runs Biome lint/format checks and tests (if implemented)
+     - Uses `@biomejs/biome ci` for comprehensive validation
+     - Fails build on any violations
    - **Docker Build**: Produces tagged images using `docker/build-push-action`
    - **Fly Deployment**: Uses `flyctl deploy` with `FLY_API_TOKEN`
    - **Notifications**: Sends status updates via ntfy.sh

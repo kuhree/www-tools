@@ -2,13 +2,32 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci]
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: oven-sh/setup-bun@v2
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+      - name: Biome CI Checks
+        run: bunx @biomejs/biome ci
+      - name: Typescript Type Checks
+        run: bunx @biomejs/biome ci
+      - name: Tests
+        run: bun test
+      - name: Build
+        run: bun run build
+
   docker:
+    needs: test
     runs-on: ubuntu-latest
     concurrency: docker-group
     outputs:
