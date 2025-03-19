@@ -6,12 +6,11 @@
 	"scripts": {
 		"build": "bun run bin/build.ts",
 		"dev": "bun run --watch src/index.ts",
+		"dev:test": "bun test --watch",
 		"lint": "bun lint:source && bun lint:types",
 		"lint:source": "bunx @biomejs/biome check --write",
 		"lint:types": "bunx tsc",
-		"start": "bun run --cwd dist index.js",
-		"test": "bun test",
-		"test:watch": "bun test --watch"
+		"start": "bun run --cwd dist index.js"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
