@@ -28,7 +28,7 @@ jobs:
 
           curl \
             -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
-            -H "Title: Fly.io Deployment: $STATUS_EMOJI" \
+            -H "Title: Fly Deployment: $STATUS_EMOJI" \
             -H "Tags: rocket,cd,${STATUS_TEXT}" \
             -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
             -H "Click: https://fly.io/apps/${{ github.event.repository.name }}" \
@@ -39,7 +39,7 @@ jobs:
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
 
-            ${STATUS_EMOJI} Deployment **${{ job.status }}**
+            ${STATUS_EMOJI} Deployment to Fly **${{ job.status }}**
 
             [View App](https://fly.io/apps/${{ github.event.repository.name }})
             [View Logs](https://fly.io/apps/${{ github.event.repository.name }}/monitoring)" \
@@ -84,16 +84,16 @@ jobs:
 
           curl \
             -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
-            -H "Title: Gitea Release: $STATUS_EMOJI" \
+            -H "Title: Gitea Release Published: $STATUS_EMOJI" \
             -H "Tags: rocket,cd,${STATUS_TEXT}" \
             -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
             -H "Click: ${{ github.server_url }}/${{ github.repository }}/releases/${{ github.ref }}" \
             -H "Markdown: yes" \
-            -d "### Deployment Details
+            -d "### Release Details
             - **Application**: \`${{ github.event.repository.name }}\`
             - **Branch**: \`${{ github.ref_name }}\`
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
 
-            ${STATUS_EMOJI} Release **${{ job.status }}**" \
+            ${STATUS_EMOJI} Release **${{ job.status }}** published" \
             ${{ secrets.NTFY_URL }}

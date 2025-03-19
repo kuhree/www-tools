@@ -80,19 +80,19 @@ jobs:
 
           curl \
             -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
-            -H "Title: Docker Build: $STATUS_EMOJI" \
+            -H "Title: Container Build & Push: $STATUS_EMOJI" \
             -H "Tags: whale,cd,${STATUS_TEXT}" \
             -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
             -H "Click: ${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | first }}" \
             -H "Markdown: yes" \
-            -d "### Build Details
+            -d "### Build & Push Details
             - **Repository**: \`${{ github.repository }}\`
             - **Branch/Tag**: \`${{ github.ref_name }}\`
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
             - **Image Tags**: \`${{ steps.meta.outputs.tags }}\`
 
-            ${STATUS_EMOJI} Docker Publish **${{ job.status }}**
+            ${STATUS_EMOJI} Container Image **${{ job.status }}**
 
             [View Container](${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | first }})" \
             ${{ secrets.NTFY_URL }}
