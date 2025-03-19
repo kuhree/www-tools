@@ -3,14 +3,16 @@ name: Docker
 on:
   schedule:
    - cron: "0 0 * * *" # Nightly
-  push:
+  workflow_run:
+    status: success
+    workflows: 
+      - "Tests"
+    types: 
+      - completed
+    branches: 
+      - main
     tags: 
-      - '*'
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - "v*.*.*"
   workflow_dispatch:
 
 env:
