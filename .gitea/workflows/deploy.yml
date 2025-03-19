@@ -39,7 +39,7 @@ jobs:
             - **Environment**: \`production\`
             - **Branch**: \`${{ github.ref_name }}\`
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
-            - **Run**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
 
             ${STATUS_EMOJI} Deployment **${{ job.status }}**
 
