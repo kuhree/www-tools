@@ -4,7 +4,8 @@ on:
   schedule:
    - cron: "0 0 * * *" # Nightly
   push:
-    tags: [ 'v*.*.*' ]
+    tags: 
+      - '*'
     branches:
       - main
   pull_request:
@@ -55,7 +56,9 @@ jobs:
           tags: |
             type=sha
             type=schedule
-            type=ref
+            type=ref,event=branch,enabled=${{ startsWith(github.ref, 'refs/heads')}}
+            type=ref,event=tag,enabled=${{ startsWith(github.ref, 'refs/tags') }}
+            type=ref,event=pr,enabled=${{ startsWith(github.ref, 'refs/pull') }}
           labels: |
             maintainer=${{ github.repository_owner }}
             org.opencontainers.image.source="${{ github.server_url }}/${{ github.repository }}"
