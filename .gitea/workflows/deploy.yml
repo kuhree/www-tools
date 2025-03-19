@@ -35,7 +35,6 @@ jobs:
             -H "Markdown: yes" \
             -d "### Deployment Details
             - **Application**: \`${{ github.event.repository.name }}\`
-            - **Environment**: \`production\`
             - **Branch**: \`${{ github.ref_name }}\`
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
