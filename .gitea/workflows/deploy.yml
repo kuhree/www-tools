@@ -82,6 +82,7 @@ jobs:
           fi
 
   release:
+    needs: deploy
     runs-on: ubuntu-latest
     environment: production
     concurrency: group:release:${{ github.ref }}
