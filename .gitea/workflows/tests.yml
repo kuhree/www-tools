@@ -41,5 +41,5 @@ jobs:
 
             ${STATUS_EMOJI} Tests **${{ job.status }}**
 
-            [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" \
+            [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})" \
             ${{ secrets.NTFY_URL }}
