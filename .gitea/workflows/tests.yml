@@ -14,11 +14,9 @@ jobs:
           fetch-depth: 1
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: | 
-          bunx @biomejs/biome ci &
-          bunx tsc --noEmit &
-          bun test
-          wait
+      - run: bunx @biomejs/biome ci
+      - run: bunx tsc --noEmit
+      - run: bun test
 
       - name: Notify Status
         if: always()
