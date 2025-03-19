@@ -80,7 +80,7 @@ jobs:
             -H "Title: Docker Build: $STATUS_EMOJI" \
             -H "Tags: whale,cd,${STATUS_TEXT}" \
             -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
-            -H "Click: ${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | split(' ')[0] }}" \
+            -H "Click: ${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | first }}" \
             -H "Markdown: yes" \
             -d "### Build Details
             - **Repository**: \`${{ github.repository }}\`
@@ -91,5 +91,5 @@ jobs:
 
             ${STATUS_EMOJI} Docker Publish **${{ job.status }}**
 
-            [View Container](${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | split(' ')[0] }})" \
+            [View Container](${{ github.server_url }}/~/packages/container/${{ env.IMAGE_NAME }}${{ step.meta.outputs.tags | first }})" \
             ${{ secrets.NTFY_URL }}
