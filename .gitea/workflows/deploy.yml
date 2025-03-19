@@ -20,7 +20,7 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: Notify Deploy Status
+      - name: Notify Status
         if: always()
         run: |
           STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"

@@ -37,7 +37,7 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
           api_key: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
 
-      - name: Notify Release Status
+      - name: Notify Status
         if: always()
         run: |
           STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
