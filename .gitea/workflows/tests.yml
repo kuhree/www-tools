@@ -27,7 +27,7 @@ jobs:
           curl \
             -H "Authorization: Bearer ${{ secrets.NTFY_API_TOKEN }}" \
             -H "Title: Tests Result: $STATUS_EMOJI" \
-            -H "Tags: rocket,cd,${STATUS_TEXT}" \
+            -H "Tags: test_tube" \
             -H "Priority: ${{ job.status == 'success' && '3' || '5' }}" \
             -H "Click: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
             -H "Markdown: yes" \
