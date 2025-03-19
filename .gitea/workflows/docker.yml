@@ -1,0 +1,134 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - main
+    tags: 
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+env:
+  REGISTRY: git.littlevibe.net
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    concurrency: group:docker:${{ github.ref }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    outputs:
+      image_tags: ${{ steps.meta.outputs.tags || steps.meta-pr.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          driver-opts: |
+            image=moby/buildkit:master
+            network=host
+
+      - name: Login to Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+
+      - name: Configure Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          labels: |
+            maintainer=${{ github.repository_owner }}
+            org.opencontainers.image.source="${{ github.server_url }}/${{ github.repository }}"
+
+      - name: Build and Push
+        id: build-and-push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Notify Status
+        if: always()
+        run: |
+          NTFY_REPO="${{ github.repository }}"
+          NTFY_REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          NTFY_REF="${{ github.ref_name }}"
+          NTFY_REF_URL="$NTFY_REPO_URL/${{ github.ref }}"
+          NTFY_STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          NTFY_COMMIT="${GITHUB_SHA:0:7}"
+          NTFY_COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          NTFY_RUN="${{ github.run_number }}"
+          NTFY_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }}"
+
+          NTFY_CONTAINER="View Container"
+          NTFY_CONTAINER_URL="${{ github.server_url }}/${{ github.repository_owner }}~/packages/container/${{ github.event.repository.name }}"
+          NTFY_CONTAINER_TAGS="${{ steps.meta.outputs.tags }}"
+          NTFY_CONTAINER_ACTION="${{ github.event_name == 'pull_request' && 'built' || 'published' }}"
+
+          NTFY_AUTH="Bearer ${{ secrets.NTFY_API_TOKEN }}"
+          NTFY_TITLE="Container($NTFY_REF@$NTFY_COMMIT): $STATUS_EMOJI"
+          NTFY_MESSAGE="$NTFY_STATUS_EMOJI Container **$NTFY_CONTAINER_ACTION** with status: **${{ job.status }}**"
+          NTFY_TAGS="whale"
+          NTFY_PRIORITY="${{ job.status == 'success' && '3' || '5' }}"
+          NTFY_CLICK="$NTFY_CONTAINER_URL"
+
+          echo "NTFY Configuration:"
+          echo "Title: $NTFY_TITLE"
+          echo "Message: $NTFY_MESSAGE"
+          echo "Tags: $NTFY_TAGS"
+          echo "Priority: $NTFY_PRIORITY"
+          echo "Click: $NTFY_CLICK"
+          echo ""
+
+          response=$(curl -v \
+            -H "Authorization: $NTFY_AUTH" \
+            -H "Title: $NTFY_TITLE" \
+            -H "Tags: $NTFY_TAGS" \
+            -H "Priority: $NTFY_PRIORITY" \
+            -H "Click: $NTFY_CLICK" \
+            -H "Markdown: yes" \
+            -d "### Details
+            - **Repository**: [$NTFY_REPO]($NTFY_REPO_URL)
+            - **Ref**: [$NTFY_REF]($NTFY_REF_URL)
+            - **Commit**: [$NTFY_COMMIT]($NTFY_COMMIT_URL)
+            - **Run**: [$NTFY_RUN]($NTFY_RUN_URL)
+            - **Tags**: $NTFY_CONTAINER_TAGS
+
+            $NTFY_MESSAGE
+
+            [$NTFY_CONTAINER]($NTFY_CONTAINER_URL)" \
+            ${{ secrets.NTFY_URL }} 2>&1)
+
+          exit_code=$?
+
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::NTFY notification failed!"
+            echo "Response: $response"
+          else
+            echo "::success::NTFY notification sent successfully."
+          fi

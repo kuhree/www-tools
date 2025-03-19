@@ -1,0 +1,6 @@
+{
+	"name": "Deploy to Fly.io",
+	"description": "Deploy image to fly.io",
+	"iconName": "octicon rocket",
+	"categories": ["deployment"]
+}

@@ -1,25 +1,29 @@
 {
-	"name": "tools",
-	"module": "index.ts",
+	"name": "@kuhree/tools",
+	"module": "src/index.ts",
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"build": "bun run bin/build.ts",
 		"dev": "bun run --watch src/index.ts",
-		"lint": "bun lint:format && bun lint:types",
-		"lint:format": "bunx biome format --write",
+		"dev:test": "bun test --watch",
+		"lint": "bun lint:source && bun lint:types",
+		"lint:source": "bunx @biomejs/biome check --write",
 		"lint:types": "bunx tsc",
-		"build": "bun run build:source && bun run build:assets && bun run build:exec",
-		"build:assets": "cp -r public src/db/migrations dist",
-		"build:source": "bun build --target=bun --minify --sourcemap ./src/index.ts --outdir dist/",
-		"build:exec": "bun build --target=bun --compile --minify --sourcemap ./src/index.ts --outfile dist/flamepp"
+		"start": "bun run --cwd dist index.js"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@biomejs/biome": "^1.9.4",
+		"@types/bun": "latest",
+		"lefthook": "^1.11.3"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"hono": "^4.7.4"
+		"@hono/zod-validator": "^0.4.3",
+		"hono": "^4.7.4",
+		"sharp": "^0.33.5",
+		"zod": "^3.24.2"
 	}
 }

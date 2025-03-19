@@ -1,0 +1,26 @@
+@import "layout.css";
+
+@layer utils {
+	.no-decoration {
+		text-decoration: none;
+	}
+
+	.flex {
+		display: flex;
+	}
+}
+
+body {
+	max-width: calc(min(120ch, round(down, 100%, 1ch)));
+}
+
+.icon {
+	height: 100%;
+	width: auto;
+	max-height: 48px;
+	max-width: 48px;
+	display: inline-block;
+	object-fit: contain;
+	object-position: center;
+	overflow: hidden;
+}

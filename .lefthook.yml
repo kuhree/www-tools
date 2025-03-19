@@ -1,0 +1,14 @@
+pre-push:
+  parallel: true
+  commands:
+    lint:
+      run: bunx @biomejs/biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {push_files}
+    types:
+      run: bunx tsc
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      stage_fixed: true

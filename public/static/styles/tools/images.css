@@ -1,0 +1,41 @@
+@keyframes blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.error-message {
+	color: #ff4444;
+	margin: 1rem 0;
+	padding: 0.5rem;
+	border: 1px solid #ff4444;
+}
+
+.image-preview {
+	margin: 2rem auto 0;
+	max-width: 40ch;
+	text-align: center;
+}
+
+.image-preview img {
+	border: 1px solid #ccc;
+}
+
+.image-preview button,
+.image-preview a {
+	display: block;
+	margin: 0 auto;
+}

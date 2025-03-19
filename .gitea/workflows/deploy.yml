@@ -1,0 +1,166 @@
+name: Deploy
+
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency: group:deploy:${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        run: flyctl deploy --local-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Notify Status
+        if: always()
+        run: |
+          NTFY_REPO="${{ github.repository }}"
+          NTFY_REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          NTFY_REF="${{ github.ref_name }}"
+          NTFY_REF_URL="$NTFY_REPO_URL/${{ github.ref }}"
+          NTFY_STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          NTFY_COMMIT="${GITHUB_SHA:0:7}"
+          NTFY_COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          NTFY_RUN="${{ github.run_number }}"
+          NTFY_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }}"
+
+          NTFY_APP="View App"
+          NTFY_APP_URL="https://fly.io/apps/${{ github.event.repository.name }}"
+          NTFY_LOGS="View Logs"
+          NTFY_LOGS_URL="https://fly.io/apps/${{ github.event.repository.name }}/monitoring"
+
+          NTFY_AUTH="Bearer ${{ secrets.NTFY_API_TOKEN }}"
+          NTFY_TITLE="Deployment($NTFY_REF@$NTFY_COMMIT): $NTFY_STATUS_EMOJI"
+          NTFY_MESSAGE="$NTFY_STATUS_EMOJI Fly.io **deployed** with status: **${{ job.status }}**"
+          NTFY_TAGS="rocket"
+          NTFY_PRIORITY="${{ job.status == 'success' && '3' || '5' }}"
+          NTFY_CLICK="https://fly.io/apps/${{ github.event.repository.name }}"
+
+          echo "NTFY Configuration:"
+          echo "Title: $NTFY_TITLE"
+          echo "Message: $NTFY_MESSAGE"
+          echo "Tags: $NTFY_TAGS"
+          echo "Priority: $NTFY_PRIORITY"
+          echo "Click: $NTFY_CLICK"
+          echo ""
+
+          response=$(curl -v \
+            -H "Authorization: $NTFY_AUTH" \
+            -H "Title: $NTFY_TITLE" \
+            -H "Tags: $NTFY_TAGS" \
+            -H "Priority: $NTFY_PRIORITY" \
+            -H "Click: $NTFY_CLICK" \
+            -H "Markdown: yes" \
+            -d "### Details
+            - **Repository**: [$NTFY_REPO]($NTFY_REPO_URL)
+            - **Ref**: [$NTFY_REF]($NTFY_REF_URL)
+            - **Commit**: [$NTFY_COMMIT]($NTFY_COMMIT_URL)
+            - **Run**: [$NTFY_RUN]($NTFY_RUN_URL)
+
+            $NTFY_MESSAGE
+
+            [$NTFY_APP]($NTFY_APP_URL)
+            [${NTFY_LOGS}]($NTFY_LOGS_URL)" \
+            ${{ secrets.NTFY_URL }} 2>&1)
+
+          exit_code=$?
+
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::NTFY notification failed!"
+            echo "Response: $response"
+          else
+            echo "::success::NTFY notification sent successfully."
+          fi
+
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: group:release:${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          platform: "gitea"
+          baseUrl: ${{ github.server_url }}
+          configuration: ".changelog.json"
+          mode: "commit"
+          token: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+          failOnError: true
+
+      - name: Create Release
+        uses: https://gitea.com/actions/release-action@main
+        with:
+          files: |-
+            dist/**  # Optional: Add assets to the release
+          body: ${{ steps.changelog.outputs.changelog }}
+          api_key: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+
+      - name: Notify Status
+        if: always()
+        run: |
+          NTFY_REPO="${{ github.repository }}"
+          NTFY_REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          NTFY_REF="${{ github.ref_name }}"
+          NTFY_REF_URL="$NTFY_REPO_URL/${{ github.ref }}"
+          NTFY_STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          NTFY_COMMIT="${GITHUB_SHA:0:7}"
+          NTFY_COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          NTFY_RUN="${{ github.run_number }}"
+          NTFY_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }}"
+
+          NTFY_AUTH="Bearer ${{ secrets.NTFY_API_TOKEN }}"
+          NTFY_TITLE="Release($NTFY_REF@$NTFY_COMMIT): $STATUS_EMOJI"
+          NTFY_MESSAGE="${STATUS_EMOJI} Gitea **released** with status: **${{ job.status }}**"
+          NTFY_TAGS="newspaper"
+          NTFY_PRIORITY="${{ job.status == 'success' && '3' || '5' }}"
+          NTFY_CLICK="${{ github.server_url }}/${{ github.repository }}/releases/${{ github.ref }}"
+
+          echo "NTFY Configuration:"
+          echo "Title: $NTFY_TITLE"
+          echo "Message: $NTFY_MESSAGE"
+          echo "Tags: $NTFY_TAGS"
+          echo "Priority: $NTFY_PRIORITY"
+          echo "Click: $NTFY_CLICK"
+          echo ""
+
+          response=$(curl -v \
+            -H "Authorization: $NTFY_AUTH" \
+            -H "Title: $NTFY_TITLE" \
+            -H "Tags: $NTFY_TAGS" \
+            -H "Priority: $NTFY_PRIORITY" \
+            -H "Click: $NTFY_CLICK" \
+            -H "Markdown: yes" \
+            -d "### Details
+            - **Repository**: [$NTFY_REPO]($NTFY_REPO_URL)
+            - **Ref**: [$NTFY_REF]($NTFY_REF_URL)
+            - **Commit**: [$NTFY_COMMIT]($NTFY_COMMIT_URL)
+            - **Run**: [$NTFY_RUN]($NTFY_RUN_URL)
+
+            $NTFY_MESSAGE" \
+            ${{ secrets.NTFY_URL }} 2>&1)
+
+          exit_code=$?
+
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::NTFY notification failed!"
+            echo "Response: $response"
+          else
+            echo "::success::NTFY notification sent successfully."
+          fi

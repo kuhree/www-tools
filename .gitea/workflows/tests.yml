@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    concurrency: group:tests:${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx @biomejs/biome ci
+      - run: bunx tsc --noEmit
+      - run: bun test
+
+      - name: Notify Status
+        if: always()
+        run: |
+          NTFY_REPO="${{ github.repository }}"
+          NTFY_REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          NTFY_REF="${{ github.ref_name }}"
+          NTFY_REF_URL="$NTFY_REPO_URL/${{ github.ref }}"
+          NTFY_STATUS_EMOJI="${{ job.status == 'success' && '✅' || '❌' }}"
+          NTFY_COMMIT="${GITHUB_SHA:0:7}"
+          NTFY_COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          NTFY_RUN="${{ github.run_number }}"
+          NTFY_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }}"
+
+          NTFY_AUTH="Bearer ${{ secrets.NTFY_API_TOKEN }}"
+          NTFY_TITLE="Tests($NTFY_REF@$NTFY_COMMIT): $NTFY_STATUS_EMOJI"
+          NTFY_MESSAGE="$NTFY_STATUS_EMOJI Tests **completed** with status: ${{ job.status }}"
+          NTFY_TAGS="test_tube"
+          NTFY_PRIORITY="${{ job.status == 'success' && '3' || '5' }}"
+          NTFY_CLICK="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+
+          echo "NTFY Configuration:"
+          echo "Title: $NTFY_TITLE"
+          echo "Message: $NTFY_MESSAGE"
+          echo "Tags: $NTFY_TAGS"
+          echo "Priority: $NTFY_PRIORITY"
+          echo "Click: $NTFY_CLICK"
+          echo ""
+
+          response=$(curl -v \
+            -H "Authorization: $NTFY_AUTH" \
+            -H "Title: $NTFY_TITLE" \
+            -H "Tags: $NTFY_TAGS" \
+            -H "Priority: $NTFY_PRIORITY" \
+            -H "Click: $NTFY_CLICK" \
+            -H "Markdown: yes" \
+            -d "### Details
+            - **Repository**: [$NTFY_REPO]($NTFY_REPO_URL)
+            - **Ref**: [$NTFY_REF]($NTFY_REF_URL)
+            - **Commit**: [$NTFY_COMMIT]($NTFY_COMMIT_URL)
+            - **Run**: [$NTFY_RUN]($NTFY_RUN_URL)
+
+            $NTFY_MESSAGE" \
+            ${{ secrets.NTFY_URL }} 2>&1)
+
+          exit_code=$?
+
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::NTFY notification failed!"
+            echo "Response: $response"
+          else
+            echo "::success::NTFY notification sent successfully."
+          fi
