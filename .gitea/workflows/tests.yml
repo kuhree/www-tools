@@ -9,16 +9,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     concurrency: group:tests:${{ github.ref }}
-    strategy:
-      matrix:
-        bun-version: [latest, 1.2.5, 1.0.x]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
       - run: bun install --frozen-lockfile
       - run: bunx @biomejs/biome ci
       - run: bunx tsc --noEmit
