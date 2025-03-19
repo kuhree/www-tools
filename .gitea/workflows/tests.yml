@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: oven-sh/setup-bun@v2
-        run: bun install --frozen-lockfile &
+      - run: bun install --frozen-lockfile
       - run: | 
           bunx @biomejs/biome ci &
           bunx tsc --noEmit &
