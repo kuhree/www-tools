@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ${{ github.server_url }}
+  REGISTRY: ${{ github.server_url | replace('https://', '') | replace('http://', '') }}
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
