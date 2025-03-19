@@ -11,7 +11,6 @@ on:
       - completed
     branches: 
       - main
-      - dev
     tags: 
       - "v*.*.*"
   workflow_dispatch:
