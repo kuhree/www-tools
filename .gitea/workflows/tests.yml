@@ -11,7 +11,7 @@ jobs:
     concurrency: group:tests:${{ github.ref }}
     strategy:
       matrix:
-        bun-version: [1.2.x]
+        bun-version: [latest, 1.2.5, 1.0.x]
     steps:
       - uses: actions/checkout@v4
         with:
