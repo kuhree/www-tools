@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ${{ split('://', github.server_url, 2)[1] }}
+  REGISTRY: git.littlevibe.net
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
