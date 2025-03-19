@@ -21,7 +21,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v5
         with:
           platform: "gitea"
-          baseUrl: "https://git.littlevibe.net"
+          baseUrl: ${{ github.server_url }}
           configuration: ".changelog.json"
           mode: "commit"
           token: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
