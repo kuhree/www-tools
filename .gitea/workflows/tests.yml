@@ -39,7 +39,5 @@ jobs:
             - **Commit**: [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})
 
-            ${STATUS_EMOJI} Tests **${{ job.status }}**
-
-            [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_number }})" \
+            ${STATUS_EMOJI} Tests **${{ job.status }}**" \
             ${{ secrets.NTFY_URL }}
