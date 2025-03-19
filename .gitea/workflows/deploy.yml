@@ -1,16 +1,8 @@
 name: Deploy
 
 on:
-  workflow_run:
-    status: success
-    workflows: 
-      - "Docker"
-    types: 
-      - completed
-    branches: 
-      - main
-    tags: 
-      - "v*.*.*"
+  push:
+    tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
 jobs:

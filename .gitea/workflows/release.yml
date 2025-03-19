@@ -1,16 +1,8 @@
 name: Release
 
 on:
-  workflow_run:
-    status: success
-    workflows: 
-      - "Deploy"
-    types: 
-      - completed
-    branches: 
-      - main
-    tags: 
-      - "v*.*.*"
+  push:
+    tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
 jobs:
