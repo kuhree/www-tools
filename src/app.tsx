@@ -123,17 +123,19 @@ export const app = new Hono<AppEnv>()
 		)
 	})
 
-/////// Dynamic build route for development ONLY
-app.get("/tools/:tool/entry.js", withErrorHandler, async (c) => {
-	const { tool } = c.req.param()
-	const file = await Bun.build({
-		entrypoints: [`src/modules/${tool}/entry.tsx`],
-	})
+/////// Dynamically build `tools` entrypoints when not in production
+if (ENVIRONMENT.NODE_ENV !== "production") {
+	app.get("/tools/:tool/entry.js", withErrorHandler, async (c) => {
+		const { tool } = c.req.param()
+		const file = await Bun.build({
+			entrypoints: [`src/modules/${tool}/entry.tsx`],
+		})
 
-	const outputPromises = file.outputs.map((o) => o.text())
-	const outputTexts = await Promise.all(outputPromises)
-	return c.body(outputTexts.join("\r\n"), 200, {
-		"Content-Type": "application/javascript",
-		"Cache-Control": "public, immutable, max-age=31536000",
+		const outputPromises = file.outputs.map((o) => o.text())
+		const outputTexts = await Promise.all(outputPromises)
+		return c.body(outputTexts.join("\r\n"), 200, {
+			"Content-Type": "application/javascript",
+			"Cache-Control": "public, immutable, max-age=31536000",
+		})
 	})
-})
+}

@@ -5,7 +5,7 @@ import { EnvironmentSchema, parseEnvironment } from "./environment"
 describe("Environment Parsing", () => {
 	it("should successfully parse a valid environment", () => {
 		const validEnv = {
-			NODE_ENV: "production",
+			NODE_ENV: "test",
 			PORT: "3000",
 			ALLOWED_ORIGINS: "https://example.com",
 			AUTHOR_EMAIL: "test@example.com",
@@ -46,7 +46,7 @@ describe("Environment Parsing", () => {
 		expect(parsedEnv).toBeDefined()
 
 		if (parsedEnv) {
-			expect(parsedEnv.NODE_ENV).toBe("production")
+			expect(parsedEnv.NODE_ENV).toBe("development")
 			expect(parsedEnv.PORT).toBe(8080) // Default value
 			expect(parsedEnv.ALLOWED_ORIGINS).toBe("*") // Default value
 			expect(parsedEnv.AUTHOR_EMAIL).toBe("hi@tools.kuhree.com") // Default value
