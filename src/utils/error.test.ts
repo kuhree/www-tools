@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test"
 import { Hono } from "hono"
 import { HTTPException } from "hono/http-exception"
 
-import { withErrorHandler } from "@/middlewares/error"
+import { withErrorHandler } from "@/middlewares/with-error-handler"
 import { AppError, ErrorCodes } from "@/utils/error"
 import { requestId } from "hono/request-id"
 import { z } from "zod"

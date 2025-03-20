@@ -2,13 +2,9 @@ import { ErrorBoundary } from "hono/jsx"
 import { jsxRenderer } from "hono/jsx-renderer"
 
 import { ErrorDetails } from "@/ui/error-details"
-import {
-	Footer,
-	Header,
-	type HeaderProps,
-	Root,
-	type RootProps,
-} from "@/ui/layout"
+import { Footer } from "@/ui/footer"
+import { Header, type HeaderProps } from "@/ui/header"
+import { Root, type RootProps } from "@/ui/root"
 import { ENVIRONMENT } from "@/utils/environment"
 
 declare module "hono" {
