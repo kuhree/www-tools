@@ -9,7 +9,7 @@ import {
 	Root,
 	type RootProps,
 } from "@/ui/layout"
-import type { Environment } from "@/utils/environment"
+import { ENVIRONMENT } from "@/utils/environment"
 
 declare module "hono" {
 	interface ContextRenderer {
@@ -24,19 +24,21 @@ declare module "hono" {
 	}
 }
 
-export const withLayout = (environment: Environment) =>
+export const withLayout = () =>
 	jsxRenderer(
 		({
 			title,
 			subtitle,
-			header = { enabled: true },
-			umami = {
-				src: environment.UMAMI_SRC,
-				id: environment.UMAMI_ID,
+			analytics = {
+				provider: "umami",
+				src: ENVIRONMENT.UMAMI_SRC,
+				id: ENVIRONMENT.UMAMI_ID,
 			},
+
+			header = { enabled: true },
 			children,
 		}) => (
-			<Root title={title} umami={umami}>
+			<Root title={title} analytics={analytics}>
 				<ErrorBoundary fallbackRender={(error) => <ErrorDetails err={error} />}>
 					{header?.enabled ? (
 						<Header back={header.back} links={header.links} />

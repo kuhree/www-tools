@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { AppError, ErrorCodes } from "./error"
 
 export type Environment = z.infer<typeof EnvironmentSchema>
 export const EnvironmentSchema = z.object({
@@ -14,7 +15,7 @@ export const EnvironmentSchema = z.object({
 	UMAMI_ID: z.string().default("a4639b6e-ecc7-4de9-900e-e7902047f780"),
 })
 
-export function parseEnvironment(env: unknown): null | Environment {
+export function parseEnvironment(env: unknown): Environment {
 	const result = EnvironmentSchema.safeParse(env)
 	if (result.success) {
 		console.debug("[Environment] Valid!")
@@ -28,5 +29,11 @@ export function parseEnvironment(env: unknown): null | Environment {
 		)
 	}
 
-	return null
+	throw new AppError(
+		ErrorCodes.VALIDATION_ERROR,
+		"Environment is invalid",
+		result.error.format(),
+	)
 }
+
+export const ENVIRONMENT = parseEnvironment(process.env)

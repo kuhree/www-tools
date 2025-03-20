@@ -1,21 +1,7 @@
 import { describe, expect, it } from "bun:test"
-import type { Environment } from "@/utils/environment"
-import { makeApp } from "./app"
-
-// Mock the environment variables for testing
-const mockEnvironment: Environment = {
-	NODE_ENV: "test",
-	PORT: 3000,
-	ALLOWED_ORIGINS: "*",
-	AUTHOR_EMAIL: "test@example.com",
-	REPO_URL: "https://github.com/example/repo",
-	UMAMI_SRC: "https://example.com/script.js",
-	UMAMI_ID: "123e4567-e89b-12d3-a456-426614174000",
-}
+import { app } from "./app"
 
 describe("Route Handling (Happy Path)", () => {
-	const app = makeApp(mockEnvironment)
-
 	it("should return 200 OK for /health", async () => {
 		const res = await app.request("/health")
 		expect(res.status).toBe(200)
@@ -49,8 +35,6 @@ describe("Route Handling (Happy Path)", () => {
 })
 
 describe("Static Asset Serving", () => {
-	const app = makeApp(mockEnvironment)
-
 	it("should return 200 OK for a known static asset (favicon.ico)", async () => {
 		const res = await app.request("/favicon.ico")
 		expect(res.status).toBe(200)
@@ -67,8 +51,6 @@ describe("Static Asset Serving", () => {
 })
 
 describe("Dynamic Build Route", () => {
-	const app = makeApp(mockEnvironment)
-
 	it("should return 200 OK for /tools/:tool/entry.js with a valid tool", async () => {
 		const tool = "images" // Or any other valid tool name
 		const res = await app.request(`/tools/${tool}/entry.js`)

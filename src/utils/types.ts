@@ -1,5 +1,5 @@
+import type { Environment } from "@/utils/environment"
 import type { RequestIdVariables } from "hono/request-id"
-import type { Environment } from "./utils/environment"
 
 export type AppEnv = {
 	Variables: RequestIdVariables & {

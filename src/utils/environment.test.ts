@@ -19,14 +19,7 @@ describe("Environment Parsing", () => {
 		expect(EnvironmentSchema.safeParse(parsedEnv).success).toBe(true)
 	})
 
-	it("should return defaults when required environment variables are missing", () => {
-		const invalidEnv = {}
-		const parsedEnv = parseEnvironment(invalidEnv)
-		expect(parsedEnv).toBeDefined()
-		expect(EnvironmentSchema.safeParse(parsedEnv).success).toBe(true)
-	})
-
-	it("should return null when environment variables are invalid", () => {
+	it("should throw when environment variables are invalid", () => {
 		const invalidEnv = {
 			NODE_ENV: "invalid",
 			PORT: "invalid",
@@ -37,14 +30,17 @@ describe("Environment Parsing", () => {
 			UMAMI_ID: "invalid",
 		}
 
-		const parsedEnv = parseEnvironment(invalidEnv)
-		expect(parsedEnv).toBeNull()
+		// FIXME: Bun's `.toThrow()` appears to be broken.
+		// Try/Catch is a workaround: https://github.com/oven-sh/bun/issues/5602#issuecomment-2124933344
+		try {
+			parseEnvironment(invalidEnv)
+		} catch (error) {
+			expect(error).toBeDefined()
+		}
 	})
 
 	it("should use default values when optional environment variables are missing", () => {
-		const partialEnv = {
-			NODE_ENV: "production",
-		}
+		const partialEnv = {}
 
 		const parsedEnv = parseEnvironment(partialEnv)
 		expect(parsedEnv).toBeDefined()

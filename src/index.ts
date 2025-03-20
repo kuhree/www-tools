@@ -1,17 +1,12 @@
-import { makeApp } from "@/app"
-import { parseEnvironment } from "@/utils/environment"
+import { app } from "@/app"
+import { ENVIRONMENT } from "@/utils/environment"
 import { withShutdown } from "@/utils/with-shutdown"
-
-const env = parseEnvironment(process.env)
-if (!env) {
-	process.exit(1)
-}
 
 withShutdown(
 	Bun.serve({
-		port: env.PORT,
-		fetch: makeApp(env).fetch,
+		port: ENVIRONMENT.PORT,
+		fetch: app.fetch,
 	}),
 )
 
-console.log("[SERVER] :: Started", env)
+console.log("[SERVER] :: Started")
