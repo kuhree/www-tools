@@ -3,9 +3,17 @@ import type { PropsWithChildren } from "hono/jsx"
 export type RootProps = PropsWithChildren<{
 	title: string
 	analytics?: { provider: "umami"; src: string; id: string }
+	stylesheets?: string[]
+	scripts?: string[]
 }>
 
-export function Root({ title, analytics, children }: RootProps) {
+export function Root({
+	title,
+	stylesheets,
+	scripts,
+	analytics,
+	children,
+}: RootProps) {
 	return (
 		<>
 			<html lang="en">
@@ -15,6 +23,11 @@ export function Root({ title, analytics, children }: RootProps) {
 					<link rel="stylesheet" href="/static/monospace-web/reset.css" />
 					<link rel="stylesheet" href="/static/monospace-web/index.css" />
 					<link rel="stylesheet" href="/static/styles/index.css" />
+					{stylesheets
+						? stylesheets?.map((href) => (
+								<link key={href} rel="stylesheet" href={href} />
+							))
+						: stylesheets}
 					<title>{title} | Kuhree's Web Tools</title>
 					{analytics?.provider === "umami" ? (
 						<script defer src={analytics.src} data-website-id={analytics.id} />
@@ -28,6 +41,11 @@ export function Root({ title, analytics, children }: RootProps) {
 						type="text/javascript"
 						src="/static/monospace-web/index.js"
 					/>
+					{scripts
+						? scripts?.map((src) => (
+								<script key={src} type="text/javascript" src={src} />
+							))
+						: null}
 				</body>
 			</html>
 		</>

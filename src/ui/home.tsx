@@ -15,21 +15,28 @@ const contactLinks = [
 export function Homepage() {
 	return (
 		<>
-			<h2>All Tools</h2>
-			<div class="subnav">
-				<a href="/tools/usernames">Username Search</a>
-				<a href="/tools/images">Image Optimizer</a>
-				<a href="/tools/webcams">Webcam Tester</a>
+			<div class="tool-list">
+				<h2>Tools List</h2>
+				<div class="list">
+					<a href="/tools/usernames">Username Search</a>
+					<a href="/tools/images">Image Optimizer</a>
+					<a href="/tools/webcams">Webcam Tester</a>
+					<a href="/tools/resolution">Screen Resolution</a>
+					<a href="/tools/keyboard">Keyboard Tester</a>
+				</div>
 			</div>
 
-			<h2>More coming soon...</h2>
-			<ul>
-				{contactLinks.map(([text, href]) => (
-					<li key={href}>
-						<a href={href}>{text}</a>
-					</li>
-				))}
-			</ul>
+			<div class="tool-list">
+				<h2>Additional tools in development</h2>
+				<div>Check back soon or contribute to help build new features:</div>
+				<div class="list">
+					{contactLinks.map(([text, href]) => (
+						<a key={href} href={href} class="button">
+							{text}
+						</a>
+					))}
+				</div>
+			</div>
 		</>
 	)
 }

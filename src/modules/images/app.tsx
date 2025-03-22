@@ -2,11 +2,14 @@ import { useState } from "hono/jsx/dom"
 
 export function App() {
 	const [imageUrl, setImageUrl] = useState<string | null>(null)
+	const [quality, setQuality] = useState<number>(80)
+	const [processing, setProcessing] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault()
 		setError(null)
+		setProcessing(true)
 
 		const form = e.currentTarget as HTMLFormElement
 		const formData = new FormData(form)
@@ -26,61 +29,68 @@ export function App() {
 			setImageUrl(url)
 			form.reset()
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to process image")
+			setError(err instanceof Error ? err.message : "Processing failed")
+		} finally {
+			setProcessing(false)
 		}
 	}
 
-	async function clearImage() {
-		if (!imageUrl) return
-		URL.revokeObjectURL(imageUrl)
-		setImageUrl(null)
-	}
-
 	return (
-		<>
+		<div class="container">
 			<form
 				method="post"
 				action="/api/v1/images"
 				enctype="multipart/form-data"
 				onSubmit={handleSubmit}
 			>
-				<label for="file">
-					Upload file
-					<input required accept="image/*" name="file" id="file" type="file" />
-				</label>
+				<fieldset>
+					<legend>Upload Image</legend>
+					<label for="file" class="file-input">
+						{imageUrl ? "Replace file" : "Choose a file"}
+						<input
+							required
+							accept="image/*"
+							name="file"
+							id="file"
+							type="file"
+							onChange={() => setImageUrl(null)}
+						/>
+					</label>
+				</fieldset>
+
+				<fieldset class="settings-grid">
+					<label for="quality">
+						Quality
+						<input
+							required
+							name="quality"
+							id="quality"
+							type="range"
+							min="0"
+							max="100"
+							list="quality-stops"
+							value={quality}
+							onChange={(e) =>
+								setQuality(Number((e.target as HTMLInputElement)?.value))
+							}
+						/>
+						<datalist id="quality-stops">
+							<option>25</option>
+							<option>50</option>
+							<option>75</option>
+							<option>100</option>
+						</datalist>
+						<output for="quality" class="value">
+							{quality}
+						</output>
+					</label>
+				</fieldset>
 
 				<fieldset>
-					<legend>Select Transformation Options:</legend>
-
-					<div class="grid">
-						<label for="quality">
-							Quality
-							<input
-								required
-								name="quality"
-								id="quality"
-								type="number"
-								min="0"
-								max="100"
-								value="80"
-							/>
-						</label>
-
-						<label for="height">
-							Height
-							<input
-								required
-								name="height"
-								id="height"
-								type="number"
-								min="0"
-								max="1200"
-								value="64"
-							/>
-						</label>
-
+					<legend>Adjust Size</legend>
+					<div class="settings-grid">
 						<label for="width">
-							Width
+							Width (px)
 							<input
 								required
 								name="width"
@@ -88,65 +98,66 @@ export function App() {
 								type="number"
 								min="0"
 								max="1200"
-								value="64"
+								value="640"
+							/>
+						</label>
+
+						<label for="height">
+							Height (px)
+							<input
+								required
+								name="height"
+								id="height"
+								type="number"
+								min="0"
+								max="1200"
+								value="480"
 							/>
 						</label>
 					</div>
 				</fieldset>
 
-				<fieldset>
-					<legend>Select a fit:</legend>
-
-					<div>
-						{["cover", "contain", "fit", "inside", "outside"].map(
-							(opt, idx) => (
-								<label key={opt} for={`fit_${opt}`}>
-									<input
-										required
-										type="radio"
-										name="fit"
-										id={`fit_${opt}`}
-										key={opt}
-										value={opt}
-										checked={idx === 0}
-									/>
-									{opt}
-								</label>
-							),
-						)}
-					</div>
+				<fieldset class="settings-grid">
+					<label>
+						Aspect Ratio
+						<select name="fit">
+							<option value="cover">Cover</option>
+							<option value="contain">Contain</option>
+							<option value="fill">Fill</option>
+							<option value="inside">Inside</option>
+							<option value="outside">Outside</option>
+						</select>
+					</label>
 				</fieldset>
 
 				<div class="actions">
-					<button type="reset">Reset Form</button>
-					<button type="submit">Optimize Image</button>
+					<button type="reset" disabled={processing}>
+						Reset
+					</button>
+					<button type="submit" disabled={processing}>
+						{processing ? "Processing..." : "Optimize"}
+					</button>
 				</div>
 			</form>
 
-			{error && <p class="error-message">Error: {error}</p>}
+			{error && <div class="error">{error}</div>}
 
 			{imageUrl && (
-				<>
-					<hr />
-					<div class="image-preview">
-						<h3>Converted Image:</h3>
-						<img
-							src={imageUrl}
-							alt="Converted result"
-							style={{ maxWidth: "100%", height: "auto" }}
-						/>
-						<div class="actions">
-							<button type="button" onClick={clearImage}>
-								Clear Image
-							</button>
-
-							<a class="hidden" id="image-download" href={imageUrl} download>
-								Download Image
-							</a>
-						</div>
-					</div>
-				</>
+				<div class="preview">
+					<img
+						src={imageUrl}
+						alt="Optimized preview"
+						style={{ maxWidth: "100%", aspectRatio: "auto" }}
+					/>
+					<a
+						href={imageUrl}
+						download="optimized-image.jpg"
+						class="download-btn"
+					>
+						Download
+					</a>
+				</div>
 			)}
-		</>
+		</div>
 	)
 }

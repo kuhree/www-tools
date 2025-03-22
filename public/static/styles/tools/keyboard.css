@@ -1,0 +1,18 @@
+.key-log {
+	padding: 0.5rem;
+	margin: 0.25rem 0;
+	background: var(--background-color-alt);
+	transition: background 0.2s;
+}
+
+.key-log.pressed {
+	background: var(--text-color-alt);
+	color: var(--background-color);
+}
+
+.input-field {
+	border: var(--border-thickness) solid var(--text-color);
+	padding: 0.5rem;
+	font-family: var(--font-family);
+	resize: vertical;
+}

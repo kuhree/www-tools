@@ -1,0 +1,11 @@
+.tool-list .list {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.tool-list .list a {
+	margin: 0;
+}

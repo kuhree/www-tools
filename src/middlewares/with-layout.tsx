@@ -23,7 +23,6 @@ declare module "hono" {
 export const withLayout = () =>
 	jsxRenderer(
 		({
-			title,
 			subtitle,
 			analytics = {
 				provider: "umami",
@@ -33,8 +32,9 @@ export const withLayout = () =>
 
 			header = { enabled: true },
 			children,
+			...root
 		}) => (
-			<Root title={title} analytics={analytics}>
+			<Root {...root}>
 				<ErrorBoundary fallbackRender={(error) => <ErrorDetails err={error} />}>
 					{header?.enabled ? (
 						<Header back={header.back} links={header.links} />
@@ -42,7 +42,7 @@ export const withLayout = () =>
 
 					<main>
 						<div class="title-details">
-							<h1 class="title">{title}</h1>
+							<h1 class="title">{root.title}</h1>
 
 							{subtitle ? <p class="subtitle">{subtitle}</p> : null}
 						</div>

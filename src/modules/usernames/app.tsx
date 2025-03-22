@@ -98,46 +98,43 @@ export function App() {
 
 	return (
 		<>
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={handleSubmit} class="form-container">
 				<input
 					required
 					id="username"
-					class="width-auto"
+					class="width-auto form-input"
 					type="text"
 					tabindex={1}
 					disabled={isLoading}
 					value={username}
 					onChange={handleUsername}
-					placeholder="Enter username to check"
+					placeholder="Enter username to check availability on 400+ platforms"
 				/>
 
 				<div class="form-actions">
 					<button
 						type="submit"
+						class="btn-primary"
 						tabindex={2}
 						disabled={isLoading || !username.trim()}
 					>
 						{isLoading ? "Checking..." : "Check Availability"}
+						{isLoading && <span class="spinner" />}
 					</button>
 				</div>
 
 				<div class="form-status">
-					{error && <pre>[!] Error: {error}</pre>}
+					{error && (
+						<div class="error-box">
+							<span class="error-icon">!</span>
+							<span class="error-text">{error}</span>
+						</div>
+					)}
 					{isLoading && (
-						<pre>
+						<div class="loading-status">
 							[*] Checking username: {username}
-							{Array(3)
-								.fill(".")
-								.map((dot, i) => (
-									<span
-										// biome-ignore lint/suspicious/noArrayIndexKey: it's all we have :(
-										key={`dot_${i}`}
-										style={{ animation: `blink 1s ${i * 0.3}s infinite` }}
-									>
-										.
-									</span>
-								))}
-						</pre>
+							<span class="blink">...</span>
+						</div>
 					)}
 					{!isLoading && results.length === 0 && !error && (
 						<pre>[?] Enter a username above to begin search</pre>
@@ -146,46 +143,53 @@ export function App() {
 			</form>
 
 			{results.length > 0 && (
-				<div>
-					<div>
-						<h2>[+] Found</h2>
-						<ul>
-							{results
-								.filter((result) => !result.available)
-								.map((result) => (
-									<li key={result.id}>
-										<pre>
-											[+] {result.id} {result.message && result.message}
-										</pre>
-										<div>
+				<div class="results-container">
+					<h2 class="section-title">Platform Availability</h2>
+
+					<div class="results-grid">
+						<div class="result-column unavailable">
+							<h3 class="column-header">Unavailable</h3>
+							<ul class="result-list">
+								{results
+									.filter((result) => !result.available)
+									.map((result) => (
+										<li class="result-item" key={result.id}>
+											<span class="platform-name">[+] {result.id}</span>
+											{result.message && <span>{result.message}</span>}
 											{result.url && (
 												<a
 													href={result.url}
+													class="platform-link"
 													target="_blank"
 													rel="noopener noreferrer"
 												>
 													{result.url}
 												</a>
 											)}
-										</div>
-									</li>
-								))}
-						</ul>
-					</div>
+										</li>
+									))}
+								{results.filter((r) => !r.available).length === 0 && (
+									<li class="result-item">No unavailable platforms found</li>
+								)}
+							</ul>
+						</div>
 
-					<div>
-						<h2>[-] Not Found</h2>
-						<ul>
-							{results
-								.filter((result) => result.available)
-								.map((result) => (
-									<li key={result.id}>
-										<pre>
-											[-] {result.id} {result.message && result.message}
-										</pre>
-									</li>
-								))}
-						</ul>
+						<div class="result-column available">
+							<h3 class="column-header">Available</h3>
+							<ul class="result-list">
+								{results
+									.filter((result) => result.available)
+									.map((result) => (
+										<li class="result-item" key={result.id}>
+											<span class="platform-name">[-] {result.id}</span>
+											{result.message && <span>{result.message}</span>}
+										</li>
+									))}
+								{results.filter((r) => r.available).length === 0 && (
+									<li class="result-item">No available platforms found</li>
+								)}
+							</ul>
+						</div>
 					</div>
 				</div>
 			)}

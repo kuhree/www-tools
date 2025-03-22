@@ -1,0 +1,142 @@
+.device-form {
+	margin: 0 auto;
+}
+
+.webcam-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem;
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr;
+}
+
+.error-banner {
+	background: var(--background-color-alt);
+	padding: 1rem;
+	border-radius: 0.5rem;
+	margin-bottom: 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.preview-section {
+	grid-column: 1 / -1;
+}
+
+video#live-preview {
+	border: 2px solid #333;
+	border-radius: 0.5rem;
+	max-width: 100%;
+}
+
+.track-info {
+	display: flex;
+	gap: 1rem;
+	margin-top: 0.5rem;
+	font-size: 0.9em;
+}
+
+.track-info > * {
+	margin: 0;
+}
+
+.recorder-container {
+	background: #f5f5f5;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.control-row {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.control-btn {
+	padding: 0.8rem 1.5rem;
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 0.3rem;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.control-btn:hover {
+	background: #0056b3;
+}
+
+.clip-list {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.clip-item {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	margin-bottom: 1rem;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 0.3rem;
+}
+
+.clip-preview video,
+.clip-preview audio {
+	width: 150px;
+}
+
+.clip-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.download-btn {
+	background: #28a745;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.3rem;
+	cursor: pointer;
+}
+
+.delete-btn {
+	background: #dc3545;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.3rem;
+	cursor: pointer;
+}
+
+.delete-btn:hover {
+	background: #c82333;
+}
+
+.form-actions {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: flex-end;
+}
+
+button[type="submit"] {
+	padding: 0.8rem 1.5rem;
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 0.3rem;
+	cursor: pointer;
+}
+
+button[type="submit"]:hover {
+	background: #0056b3;
+}
+
+@media (max-width: 767px) {
+	.recorder-section {
+		grid-column: 1 / -1;
+	}
+}

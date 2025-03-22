@@ -1,0 +1,143 @@
+.resolution-tester {
+	margin: 0 auto;
+	padding: 20px;
+
+	--text-color-accent: #3498db;
+	--text-color-success: #27ae60;
+}
+
+.resolution-display {
+	text-align: center;
+	margin: 30px 0;
+}
+
+.current-resolution {
+	display: inline-block;
+	padding: 20px 40px;
+	background-color: var(--background-color-alt);
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.current-resolution h2 {
+	margin: 0;
+}
+
+.resolution-value {
+	font-size: 3rem;
+	font-weight: bold;
+	color: var(--text-color-alt);
+}
+
+.info-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 20px;
+	margin: 30px 0;
+}
+
+.info-card {
+	background-color: var(--background-color-alt);
+	border-radius: 8px;
+	margin: 0;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.info-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+	margin-top: 0;
+	color: var(--text-color-accent);
+	font-size: 1.2rem;
+}
+
+.info-value {
+	font-size: 1.8rem;
+	font-weight: bold;
+	margin: 10px 0;
+	color: var(--text-color-alt);
+}
+
+.info-description {
+	font-size: 0.9rem;
+	color: var(--text-color-alt);
+}
+
+.viewport-visualizer {
+	margin: 40px 0;
+	text-align: center;
+}
+
+.viewport-box {
+	width: 100%;
+	max-width: 600px;
+	border: 2px solid var(--text-color-accent);
+	margin: 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(52, 152, 219, 0.1);
+}
+
+.responsive-breakpoints {
+	margin: 40px 0;
+}
+
+.responsive-breakpoints table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 15px;
+}
+
+.responsive-breakpoints th,
+.responsive-breakpoints td {
+	padding: 12px 15px;
+	text-align: left;
+	border-bottom: 1px solid var(--text-color-alt);
+}
+
+.responsive-breakpoints th {
+	background-color: var(--background-color-alt);
+	font-weight: bold;
+	color: var(--text-color-alt);
+}
+
+.responsive-breakpoints tr:hover {
+	background-color: var(--background-color-alt);
+}
+
+.active-breakpoint {
+	background-color: var(--background-color-alt);
+	font-weight: bold;
+}
+
+.active-breakpoint td:last-child {
+	color: var(--text-color-success);
+}
+
+.resize-instructions {
+	text-align: center;
+	margin: 30px 0;
+	color: var(--text-color-alt);
+	font-style: italic;
+}
+
+@media (max-width: 768px) {
+	.info-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.resolution-value {
+		font-size: 2.5rem;
+	}
+
+	.info-value {
+		font-size: 1.5rem;
+	}
+}

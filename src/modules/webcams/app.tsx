@@ -12,6 +12,7 @@ type DevicesFormProps = {
 
 function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 	const [devices, setDevices] = useState<Array<MediaDeviceInfo> | undefined>()
+	const [isSubmitted, setIsSubmitted] = useState(false)
 
 	const devicesByKind = devices?.reduce<DevicesByKind>(
 		(prev, curr) => {
@@ -29,6 +30,7 @@ function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 	const handleFormSubmit = useCallback(
 		async (e: Event) => {
 			e.preventDefault()
+			setIsSubmitted(true)
 
 			const formData = new FormData(e.currentTarget as HTMLFormElement)
 			const selectedDevices: SelectedDevices = {
@@ -62,7 +64,7 @@ function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 	}, [])
 
 	return (
-		<form onSubmit={handleFormSubmit}>
+		<form onSubmit={handleFormSubmit} class="device-form">
 			<fieldset>
 				<legend>Select your devices</legend>
 
@@ -86,7 +88,7 @@ function DevicesForm({ onDevices, onError }: DevicesFormProps) {
 												type="radio"
 												style="margin-right: 0.5rem"
 												value={device.deviceId}
-												checked={idx === 0}
+												checked={idx === 0 || isSubmitted}
 											/>
 
 											{device.label}
@@ -199,85 +201,92 @@ function Recorder({ stream, type, onError }: RecorderProps) {
 	}, [stream, recorder, recorderState])
 
 	return (
-		<div class="my-0">
-			<h2>Clips ({type.split("/")[0]?.toUpperCase()})</h2>
-
-			<div class="grid">
-				{recorder?.state === "inactive" ? (
-					<button type="button" onClick={handleRecorderStart}>
-						Start Recording
+		<div class="recorder-container">
+			<h2>Recorder ({type.split("/")[0]?.toUpperCase()})</h2>
+			<div class="control-row">
+				{recorder?.state === "inactive" && (
+					<button
+						type="button"
+						class="control-btn"
+						onClick={handleRecorderStart}
+					>
+						<span>Start Recording</span>
 					</button>
-				) : null}
+				)}
 
-				{recorder?.state === "recording" ? (
-					<button type="button" onClick={handleRecorderStop}>
-						Pause
+				{recorder?.state === "recording" && (
+					<button
+						type="button"
+						class="control-btn"
+						onClick={handleRecorderStop}
+					>
+						<span>Pause</span>
 					</button>
-				) : null}
+				)}
 
-				{recorder?.state === "paused" ? (
-					<>
-						<button type="button" onClick={handleRecorderStart}>
-							Resume
+				{recorder?.state === "paused" && (
+					<div>
+						<button
+							type="button"
+							class="control-btn"
+							onClick={handleRecorderStart}
+						>
+							<span>Resume</span>
 						</button>
-						<button type="button" onClick={handleRecorderStop}>
-							Save
+						<button
+							type="button"
+							class="control-btn"
+							onClick={handleRecorderStop}
+						>
+							<span>Save</span>
 						</button>
-					</>
-				) : null}
+					</div>
+				)}
 			</div>
 
-			<ul>
-				{clips
-					?.toSorted((a, b) => (a.timestamp < b.timestamp ? 1 : -1))
-					.map(({ url }) => (
-						<li key={url}>
-							<h3>{url.split("/").at(-1)}</h3>
-
-							{type.toLowerCase().startsWith("audio") ? (
-								<div>
-									<audio controls>
-										<source src={url} type="audio/mpeg" />
-										<source src={url} type="audio/ogg; codecs=opus" />
-										<source src={url} type="audio/ogg; codecs=vorbis" />
-										<source src={url} type={type} />
-									</audio>
-
-									<p>
-										Download{" "}
-										<a href={url} download={`${url.split("/").at(-1)}.mp3`}>
-											MP3
-										</a>{" "}
-										or{" "}
-										<a href={url} download={`${url.split("/").at(-1)}.ogg`}>
-											OGG
+			<div class="clip-list">
+				<h3>Recordings</h3>
+				<ul>
+					{clips
+						?.toSorted((a, b) => b.timestamp - a.timestamp)
+						.map(({ timestamp, url }) => (
+							<li key={url}>
+								<div class="clip-item">
+									<div class="clip-preview">
+										{type.startsWith("video") ? (
+											<video controls>
+												<source src={url} type={type} />
+											</video>
+										) : (
+											<audio controls>
+												<source src={url} type={type} />
+											</audio>
+										)}
+									</div>
+									<div class="clip-actions">
+										<a
+											href={url}
+											download={`recording-${timestamp}.${type.split("/")[0]}`}
+										>
+											<button type="button" class="download-btn">
+												Download
+											</button>
 										</a>
-									</p>
+										<button
+											type="button"
+											class="delete-btn"
+											onClick={() =>
+												setClips(clips.filter((c) => c.url !== url))
+											}
+										>
+											Delete
+										</button>
+									</div>
 								</div>
-							) : (
-								<div>
-									<video controls>
-										<source src={url} type="video/mp4" />
-										<source src={url} type="video/ogg; codecs=opus" />
-										<source src={url} type="video/ogg; codecs=vorbis" />
-										<source src={url} type={type} />
-									</video>
-
-									<p>
-										Download{" "}
-										<a href={url} download={`${url.split("/").at(-1)}.mp4`}>
-											MP4
-										</a>{" "}
-										or{" "}
-										<a href={url} download={`${url.split("/").at(-1)}.ogg`}>
-											OGG
-										</a>
-									</p>
-								</div>
-							)}
-						</li>
-					)) ?? <li>No Clips. Try recording a clip.</li>}
-			</ul>
+							</li>
+						)) ?? <li>No Clips. Try recording a clip.</li>}
+				</ul>
+			</div>
 		</div>
 	)
 }
@@ -292,7 +301,7 @@ export function App() {
 			const newError =
 				e instanceof Error
 					? e
-					: new Error("Unknown error occured while getting user's permission.")
+					: new Error("Unknown error occurred while getting user's permission.")
 			console.error(`[ERROR] :: ${prefix}`, newError)
 			setError(newError)
 		},
@@ -301,16 +310,24 @@ export function App() {
 
 	const handleDeviceSelection = useCallback(
 		async (devices: SelectedDevices) => {
-			const contstraints: MediaStreamConstraints = {
-				audio: devices.audioinput ? { deviceId: [devices.audioinput] } : true,
-				video: devices.videoinput ? { deviceId: [devices.videoinput] } : true,
+			const constraints: MediaStreamConstraints = {
+				audio: devices.audioinput
+					? { deviceId: { exact: devices.audioinput } }
+					: true,
+				video: devices.videoinput
+					? {
+							deviceId: { exact: devices.videoinput },
+							width: 1280,
+							height: 720,
+						}
+					: { width: 1280, height: 720 },
 			}
 
 			try {
-				const stream = await navigator.mediaDevices.getUserMedia(contstraints)
+				const stream = await navigator.mediaDevices.getUserMedia(constraints)
 				if (videoRef.current) {
 					videoRef.current.srcObject = stream
-					videoRef.current.play()
+					await videoRef.current.play()
 				}
 
 				setStream(stream)
@@ -323,68 +340,54 @@ export function App() {
 
 	return (
 		<>
-			{error ? (
-				<div>
-					<p>Error {error?.message}</p>
+			{error && (
+				<div class="error-banner">
+					<p>Error: {error.message}</p>
+					<button type="button" onClick={() => setError(null)}>
+						Dismiss
+					</button>
 				</div>
-			) : null}
+			)}
 
-			{!stream ? (
-				<DevicesForm onDevices={handleDeviceSelection} onError={handleError} />
-			) : null}
-
-			<figure>
-				<video ref={videoRef} id="live-preview" autoplay />
-
-				<figcaption>
-					<ul>
-						<li>
-							Video Tracks
-							<ul>
-								{stream?.getVideoTracks().map((track) => (
-									<li
-										key={`video_${track.id}`}
-										data-track-id={track.id}
-										data-track-kind={track.kind}
-									>
-										{track.label}
-									</li>
-								)) ?? <li>No Video Tracks found.</li>}
-							</ul>
-						</li>
-
-						<li>
-							Audio Tracks
-							<ul>
-								{stream?.getAudioTracks().map((track) => (
-									<li
-										key={`audio_${track.id}`}
-										data-track-id={track.id}
-										data-track-kind={track.kind}
-									>
-										{track.label}
-									</li>
-								)) ?? <li>No Audio Tracks found.</li>}
-							</ul>
-						</li>
-					</ul>
-				</figcaption>
-			</figure>
-
-			{stream ? (
-				<div class="grid">
-					<Recorder
-						stream={stream}
-						type="video/ogg; codecs=opus"
+			<div class="webcam-container">
+				{!stream && (
+					<DevicesForm
+						onDevices={handleDeviceSelection}
 						onError={handleError}
 					/>
-					<Recorder
-						stream={stream}
-						type="audio/ogg; codecs=opus"
-						onError={handleError}
-					/>
+				)}
+
+				<div class="preview-section">
+					<figure>
+						<video
+							ref={videoRef}
+							id="live-preview"
+							autoPlay
+							playsInline
+							style={{ width: "100%", aspectRatio: "16/9" }}
+						/>
+						<figcaption>
+							<div class="track-info">
+								<div>
+									<strong>Video Track:</strong>{" "}
+									{stream?.getVideoTracks()[0]?.label || "Default"}
+								</div>
+								<div>
+									<strong>Audio Track:</strong>{" "}
+									{stream?.getAudioTracks()[0]?.label || "Default"}
+								</div>
+							</div>
+						</figcaption>
+					</figure>
 				</div>
-			) : null}
+
+				{stream && (
+					<div class="recorder-section">
+						<Recorder stream={stream} type="video/webm" onError={handleError} />
+						<Recorder stream={stream} type="audio/webm" onError={handleError} />
+					</div>
+				)}
+			</div>
 		</>
 	)
 }

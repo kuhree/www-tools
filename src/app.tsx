@@ -1,3 +1,4 @@
+import { Homepage } from "@/ui/home"
 import { Hono } from "hono"
 import { serveStatic } from "hono/bun"
 import { cors } from "hono/cors"
@@ -72,55 +73,20 @@ export const app = new Hono<AppEnv>()
 	})
 	.get("/tools/:tool", (c) => {
 		const { tool } = c.req.param()
-		const entryCss = `/static/styles/tools/${tool}.css`
-		const entryJs = `/tools/${tool}/entry.js`
 
-		return c.render(
-			<>
-				<div id="root" />
-				<link type="text/css" rel="stylesheet" href={entryCss} />
-				<script type="text/javascript" src={entryJs} />
-			</>,
-			{ title: tool.toLocaleUpperCase() },
-		)
+		return c.render(<div id="root" />, {
+			title: tool.toLocaleUpperCase(),
+			stylesheets: [`/static/styles/tools/${tool}.css`],
+			scripts: [`/tools/${tool}/entry.js`],
+		})
 	})
 	.get("/", async (c) => {
-		const contactLinks = [
-			[
-				"Submit a request",
-				encodeURI(`${ENVIRONMENT.REPO_URL}/issues/new?title=[Request]`),
-			],
-			[
-				"Report an issue",
-				encodeURI(`${ENVIRONMENT.REPO_URL}/issues/new?title=[Issue]`),
-			],
-			["Get in Touch", `mailto:${ENVIRONMENT.AUTHOR_EMAIL}`],
-		]
-
-		return c.render(
-			<>
-				<h2>All Tools</h2>
-				<div class="subnav">
-					<a href="/tools/usernames">Username Search</a>
-					<a href="/tools/images">Image Optimizer</a>
-					<a href="/tools/webcams">Webcam Tester</a>
-				</div>
-
-				<h2>More coming soon...</h2>
-				<ul>
-					{contactLinks.map(([text, href]) => (
-						<li key={href}>
-							<a href={href}>{text}</a>
-						</li>
-					))}
-				</ul>
-			</>,
-			{
-				title: "Kuhree's Web Toolbox",
-				subtitle: "A collection of tools. No logging, no ads, just solutions.",
-				header: { enabled: false, back: null, links: null },
-			},
-		)
+		return c.render(<Homepage />, {
+			title: "Kuhree's Web Toolbox",
+			subtitle: "A collection of tools. No logging, no ads, just solutions.",
+			header: { enabled: false, back: null, links: null },
+			stylesheets: ["/static/styles/homepage.css"],
+		})
 	})
 
 /////// Dynamically build `tools` entrypoints when not in production
