@@ -105,7 +105,7 @@ jobs:
           baseUrl: ${{ github.server_url }}
           configuration: ".changelog.json"
           mode: "commit"
-          token: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+          token: ${{ secrets.LITTLEVIBE_RELEASE_TOKEN }}
           failOnError: true
 
       - name: Create Release
@@ -114,7 +114,7 @@ jobs:
           files: |-
             dist/**  # Optional: Add assets to the release
           body: ${{ steps.changelog.outputs.changelog }}
-          api_key: ${{ secrets.LITTLEVIBE_ACCESS_TOKEN }}
+          api_key: ${{ secrets.LITTLEVIBE_RELEASE_TOKEN }}
 
       - name: Notify Status
         if: always()
