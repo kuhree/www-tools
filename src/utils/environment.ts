@@ -11,7 +11,7 @@ export const EnvironmentSchema = z.object({
 	ALLOWED_ORIGINS: z.string().default("*"),
 
 	AUTHOR_EMAIL: z.string().email().default("hi@tools.kuhree.com"),
-	REPO_URL: z.string().url().default("https://github.com/kuhree/tools"),
+	REPO_URL: z.string().url().default("https://github.com/kuhree/www-tools"),
 
 	UMAMI_SRC: z.string().url().default("https://umami.kuhree.com/script.js"),
 	UMAMI_ID: z.string().default("a4639b6e-ecc7-4de9-900e-e7902047f780"),

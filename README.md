@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/kuhree/tools">
+  <a href="https://github.com/kuhree/www-tools">
     <img src="https://via.placeholder.com/72" alt="Logo" width=72 height=72>
   </a>
 
@@ -8,17 +8,17 @@
   <p align="center">
     A collection of privacy-focused web tools for image optimization, username checks, webcam testing, and more.
     <br>
-    <a href="https://github.com/kuhree/tools/issues/new?template=bug.md">Report bug</a>
+    <a href="https://github.com/kuhree/www-tools/issues/new?template=bug.md">Report bug</a>
     ·
-    <a href="https://github.com/kuhree/tools/issues/new?template=feature.md&labels=feature">Request feature</a>
+    <a href="https://github.com/kuhree/www-tools/issues/new?template=feature.md&labels=feature">Request feature</a>
   </p>
 </p>
 
 <!-- Shields -->
-![GitHub repo size](https://img.shields.io/github/repo-size/kuhree/tools)
-![GitHub contributors](https://img.shields.io/github/contributors/kuhree/tools)
-![GitHub stars](https://img.shields.io/github/stars/kuhree/tools?style=social)
-![GitHub forks](https://img.shields.io/github/forks/kuhree/tools?style=social)
+![GitHub repo size](https://img.shields.io/github/repo-size/kuhree/www-tools)
+![GitHub contributors](https://img.shields.io/github/contributors/kuhree/www-tools)
+![GitHub stars](https://img.shields.io/github/stars/kuhree/www-tools?style=social)
+![GitHub forks](https://img.shields.io/github/forks/kuhree/www-tools?style=social)
 
 ## Table of contents
 
@@ -39,7 +39,7 @@ To get started with the Kuhree Web Tools:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kuhree/tools.git
+   git clone https://github.com/kuhree/www-tools.git
    ```
 2. Install dependencies and start the server:
    ```bash
