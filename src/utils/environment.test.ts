@@ -50,7 +50,7 @@ describe("Environment Parsing", () => {
 			expect(parsedEnv.PORT).toBe(8080) // Default value
 			expect(parsedEnv.ALLOWED_ORIGINS).toBe("*") // Default value
 			expect(parsedEnv.AUTHOR_EMAIL).toBe("hi@tools.kuhree.com") // Default value
-			expect(parsedEnv.REPO_URL).toBe("https://github.com/kuhree/tools") // Default value
+			expect(parsedEnv.REPO_URL).toBe("https://github.com/kuhree/www-tools") // Default value
 			expect(parsedEnv.UMAMI_SRC).toBe("https://umami.kuhree.com/script.js") // Default value
 			expect(parsedEnv.UMAMI_ID).toBe("a4639b6e-ecc7-4de9-900e-e7902047f780") // Default value
 		}
